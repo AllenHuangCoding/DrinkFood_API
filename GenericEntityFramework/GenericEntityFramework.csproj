@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.1.2</Version>
+    <Authors>Allen</Authors>
+    <Company>CHASE</Company>
+    <PackageId>CodeShare.Libs.GenericEntityFramework</PackageId>
+    <Product>GenericEntityFramework</Product>
+    <Description>泛型EntityFramework並支援資料庫讀寫分離連線</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="SGLab.Library.DependencyInjection" Version="6.0.1" />
+  </ItemGroup>
+
+</Project>
