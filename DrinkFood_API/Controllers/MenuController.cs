@@ -23,14 +23,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetBrandMenuList(Guid StoreID)
         {
             var Response = _menuService.GetBrandMenuList(StoreID);
-            if (_menuService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_menuService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
         /// <summary>
@@ -41,14 +34,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetStoreMenuList(Guid StoreID)
         {
             var Response = _menuService.GetStoreMenu(StoreID);
-            if (_menuService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_menuService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, 1));
         }
     }
 }

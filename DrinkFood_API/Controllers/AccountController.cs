@@ -24,14 +24,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult Login([FromQuery] RequestLoginModel Request)
         {
             var Response = _accountService.Login(Request);
-            if (_accountService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, _accountService.SimpleResult.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_accountService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, _accountService.SimpleResult.Count));
         }
 
         /// <summary>
@@ -42,14 +35,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetProfile(Guid AccountID)
         {
             var Response = _accountService.GetProfile(AccountID);
-            if (_accountService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response));
-            }
-            else
-            {
-                return Json(new ResponseModel(_accountService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response));
         }
 
         /// <summary>
@@ -60,14 +46,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult UpdateProfile(Guid AccountID, [FromBody] RequestUpdateProfileModel Request)
         {
             _accountService.UpdateProfile(AccountID, Request);
-            if (_accountService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null));
-            }
-            else
-            {
-                return Json(new ResponseModel(_accountService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null));
         }
     }
 }

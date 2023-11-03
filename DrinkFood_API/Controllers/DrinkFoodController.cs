@@ -24,14 +24,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetDrinkFoodList(Guid StoreID)
         {
             var Response = _drinkFoodService.GetDrinkFoodList(StoreID);
-            if (_drinkFoodService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_drinkFoodService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
     }

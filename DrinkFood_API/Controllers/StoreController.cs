@@ -25,14 +25,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetStoreList([FromQuery] RequestStoreListModel Request)
         {
             var Response = _storeService.GetStoreList(Request);
-            if (_storeService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_storeService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
     }
 }

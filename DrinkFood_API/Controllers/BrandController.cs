@@ -23,14 +23,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult BrandOptions()
         {
             var Response = _brandService.BrandOptions();
-            if (_brandService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_brandService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
     }

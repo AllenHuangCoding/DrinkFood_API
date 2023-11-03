@@ -24,14 +24,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetMyOrderList(Guid AccountID, [FromQuery] RequestGetMyOrderListModel Request)
         {
             var Response = _orderService.GetMyOrderList(AccountID, Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
         /// <summary>
@@ -42,14 +35,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetOrder(Guid OrderID)
         {
             var Response = _orderService.GetOrder(OrderID);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, 1));
         }
 
         /// <summary>
@@ -60,14 +46,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PostOrder([FromBody] RequestPostOrderModel Request)
         {
             _orderService.PostOrder(Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -78,14 +57,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PutOrderTime(Guid OrderID, [FromBody] RequestPutOrderTimeModel Request)
         {
             _orderService.PutOrderTime(OrderID, Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -96,14 +68,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult CloseOrder(Guid OrderID)
         {
             _orderService.CloseOrder(OrderID);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -114,14 +79,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PostOrderDetail([FromBody] RequestPostOrderDetailModel Request)
         {
             _orderService.PostOrderDetail(Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -132,14 +90,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult DeleteOrderDetail(Guid OrderDetailID)
         {
             _orderService.DeleteOrderDetail(OrderDetailID);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -150,14 +101,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PutPayment(Guid OrderDetailID, [FromBody] RequestPutPaymentModel Request)
         {
             _orderService.PutPayment(OrderDetailID, Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
@@ -168,14 +112,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PutPaymentDateTime(Guid OrderDetailID, [FromBody] RequestPutPaymentDateTimeModel Request)
         {
             _orderService.PutPaymentDateTime(OrderDetailID, Request);
-            if (_orderService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 1));
-            }
-            else
-            {
-                return Json(new ResponseModel(_orderService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 1));
         }
     }
 }

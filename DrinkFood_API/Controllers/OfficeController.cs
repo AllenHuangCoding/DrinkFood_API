@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DrinkFood_API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class OfficeController : BaseController
     {
         [Inject] private readonly OfficeService _officeService;
@@ -22,14 +24,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetOfficeList([FromQuery] RequestOfficeListModel Request)
         {
             var Response = _officeService.GetOfficeList(Request);
-            if (_officeService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_officeService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
         /// <summary>
@@ -40,14 +35,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult GetOfficeMemberList(Guid OfficeID)
         {
             var Response = _officeService.GetOfficeMemberList(OfficeID);
-            if (_officeService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(Response, Response.Count));
-            }
-            else
-            {
-                return Json(new ResponseModel(_officeService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
         /// <summary>
@@ -59,14 +47,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult PostOfficeMember(Guid OfficeID, [FromForm] RequestPostOfficeMemberModel Request)
         {
             _officeService.PostOfficeMember(OfficeID, Request);
-            if (_officeService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 0));
-            }
-            else
-            {
-                return Json(new ResponseModel(_officeService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 0));
         }
 
 
@@ -80,14 +61,7 @@ namespace DrinkFood_API.Controllers
         public IActionResult DeleteOfficeMember([FromForm] RequestDeleteOfficeMemberModel Request)
         {
             _officeService.DeleteOfficeMember(Request);
-            if (_officeService.SimpleResult.Success)
-            {
-                return Json(new ResponseData<object?>(null, 0));
-            }
-            else
-            {
-                return Json(new ResponseModel(_officeService.SimpleResult));
-            }
+            return Json(new ResponseData<object?>(null, 0));
         }
     }
 }
