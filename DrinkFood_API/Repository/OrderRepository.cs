@@ -53,8 +53,11 @@ namespace DrinkFood_API.Repository
                        OrderStatus = order.O_status,
                        OrderStatusDesc = "尚未設定",
                        OrderShareUrl = order.O_share_url,
+                       OpenTime = order.O_open_time.ToString("yyyy-MM-dd HH:mm"),
                        CloseTime = order.O_close_time.ToString("yyyy-MM-dd HH:mm"),
+                       CloseRemindTime = order.O_close_remind_time.HasValue ? order.O_close_remind_time.Value.ToString("yyyy-MM-dd HH:mm") : "-",
                        DrinkTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
+                       Remark = order.O_remark,
                        CreateTime = order.O_create.ToString("yyyy-MM-dd HH:mm"),
                    };
         }

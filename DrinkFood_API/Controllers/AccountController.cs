@@ -28,6 +28,17 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 登入
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpGet("GetAccountList")]
+        public IActionResult GetAccountList()
+        {
+            var Response = _accountService.GetAccountList();
+            return Json(new ResponseData<object?>(Response, Response.Count));
+        }
+
+        /// <summary>
         /// 取得基本資料
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]

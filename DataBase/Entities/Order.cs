@@ -23,17 +23,23 @@ public partial class Order
 
     public Guid O_type { get; set; }
 
+    public string? O_share_url { get; set; }
+
+    //public DateTime O_open_time { get; set; }
+
+    public DateTime O_close_time { get; set; }
+
+    //public DateTime? O_close_remind_time { get; set; }
+
+    public DateTime O_drink_time { get; set; }
+
+    //public string? O_remark { get; set; }
+
     /// <summary>
     /// <para>98: 關閉</para>
     /// <para>99: 刪除</para>
     /// </summary>
     public string O_status { get; set; }
-
-    public string? O_share_url { get; set; }
-
-    public DateTime O_close_time { get; set; }
-
-    public DateTime O_drink_time { get; set; }
 
     public DateTime O_create { get; set; }
 

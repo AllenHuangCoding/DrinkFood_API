@@ -23,7 +23,12 @@ namespace DrinkFood_API.Services
         {
             return _orderRepository.GetViewOrder().Where(x => 
                 x.CreateAccountID == AccountID
-            ).ToList();
+            ).OrderByDescending(x => x.DrinkTime).ToList();
+        }
+
+        public List<ViewOrder> GetOrderList()
+        {
+            return _orderRepository.GetViewOrder().OrderByDescending(x => x.DrinkTime).ToList();
         }
 
         public ViewOrderAndDetail? GetOrder(Guid OrderID)

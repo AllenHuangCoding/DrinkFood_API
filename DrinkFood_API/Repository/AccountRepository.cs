@@ -16,6 +16,17 @@ namespace DrinkFood_API.Repository
 
         }
 
+        public List<ResponseAccountListModel> GetAccountList() 
+        {
+            return GetAll().Select(x => new ResponseAccountListModel
+            {
+                AccountID = x.A_id,
+                Name = x.A_name,
+                Brief = x.A_brief,
+                Email = x.A_email,
+            }).ToList();
+        }
+
         public void UpdateProfile(UpdateProfileModel Data)
         {
             var account = GetById(Data.AccountID) ?? throw new ApiException("使用者ID不存在", 400);

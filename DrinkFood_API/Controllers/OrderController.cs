@@ -17,6 +17,17 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 訂單清單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpGet("GetOrderList")]
+        public IActionResult GetOrderList()
+        {
+            var Response = _orderService.GetOrderList();
+            return Json(new ResponseData<object?>(Response, Response.Count));
+        }
+
+        /// <summary>
         /// 自己開團的清單
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]

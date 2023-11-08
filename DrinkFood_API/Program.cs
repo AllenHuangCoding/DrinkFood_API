@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 #region 增加的註冊服務
 
 // 服務與工廠
-builder.Services.AddSingleton<DBContextFactory<EFContext>>();
+builder.Services.AddScoped<DBContextFactory<EFContext>>();
 
 // 自動注入繼承Base相關的類別
 builder.Services.AddScopedByClassName("BaseTable");

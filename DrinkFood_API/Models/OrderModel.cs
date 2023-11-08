@@ -62,7 +62,13 @@
 
         public string DrinkTime { get; set; } = null!;
 
+        //public string OpenTime { get; set; } = null!;
+
+        //public string? CloseRemindTime { get; set; }
+
         public string CloseTime { get; set; } = null!;
+
+        //public string? Remark { get; set; }
 
         public string CreateTime { get; set; } = null!;
 

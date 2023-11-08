@@ -1,5 +1,6 @@
 ﻿using DataBase.Entities;
 using DrinkFood_API.Exceptions;
+using DrinkFood_API.Model;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
@@ -19,6 +20,11 @@ namespace DrinkFood_API.Services
         {
             _ = _accountRepository.Exist(Request.Number, Request.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
             return new ResponseLoginModel() { Token = "" };
+        }
+
+        public List<ResponseAccountListModel> GetAccountList()
+        {
+            return _accountRepository.GetAccountList();
         }
 
         public ResponseProfileModel? GetProfile(Guid AccountID)

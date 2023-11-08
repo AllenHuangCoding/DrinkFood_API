@@ -29,6 +29,17 @@ namespace DrinkFood_API.Models
         public required string Token { get; set; }
     }
 
+    public class ResponseAccountListModel
+    {
+        public Guid AccountID { get; set; }
+
+        public string Name { get; set; } = null!;
+
+        public string? Brief { get; set; }
+
+        public string Email { get; set; } = null!;
+    }
+
     public class RequestUpdateProfileModel
     {
         public string Name { get; set;}
