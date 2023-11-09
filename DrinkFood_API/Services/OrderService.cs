@@ -28,7 +28,7 @@ namespace DrinkFood_API.Services
 
         public List<ViewOrder> GetOrderList()
         {
-            return _orderRepository.GetViewOrder().OrderByDescending(x => x.DrinkTime).ToList();
+            return _orderRepository.GetViewOrder().OrderByDescending(x => x.OrderID).ToList();
         }
 
         public ViewOrderAndDetail? GetOrder(Guid OrderID)

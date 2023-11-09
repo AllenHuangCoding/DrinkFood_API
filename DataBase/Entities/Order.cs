@@ -25,15 +25,15 @@ public partial class Order
 
     public string? O_share_url { get; set; }
 
-    //public DateTime O_open_time { get; set; }
+    public DateTime O_drink_time { get; set; }
+
+    public DateTime O_open_time { get; set; }
 
     public DateTime O_close_time { get; set; }
 
-    //public DateTime? O_close_remind_time { get; set; }
+    public DateTime? O_close_remind_time { get; set; }
 
-    public DateTime O_drink_time { get; set; }
-
-    //public string? O_remark { get; set; }
+    public string? O_remark { get; set; }
 
     /// <summary>
     /// <para>98: 關閉</para>
