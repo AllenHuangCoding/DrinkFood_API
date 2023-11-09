@@ -23,7 +23,7 @@ namespace DrinkFood_API.Services
         {
             return _orderRepository.GetViewOrder().Where(x => 
                 x.CreateAccountID == AccountID
-            ).OrderByDescending(x => x.DrinkTime).ToList();
+            ).OrderByDescending(x => x.OrderID).ToList();
         }
 
         public List<ViewOrder> GetOrderList()
@@ -82,8 +82,21 @@ namespace DrinkFood_API.Services
 
         #endregion
 
-
         #region 訂單詳細
+
+        public List<ViewOrderDetail> GetOrderDetailHistory(Guid AccountID)
+        {
+            return _orderDetailRepository.GetViewOrderDetail().Where(x =>
+                x.AccountID == AccountID
+            ).ToList();
+        }
+
+        public List<ViewOrderDetail> GetHomeOrderDetailHistory(Guid AccountID, Guid OfficeID)
+        {
+            return _orderDetailRepository.GetViewOrderDetail().Where(x =>
+                x.AccountID == AccountID && x.OfficeID == OfficeID
+            ).ToList();
+        }
 
         /// <summary>
         /// 查看訂單內容 (目前皆可以看到，也可以考慮像Nidin自己看自己、團長看全部)

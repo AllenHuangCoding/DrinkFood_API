@@ -1,4 +1,6 @@
-﻿namespace DrinkFood_API.Models
+﻿using Microsoft.Identity.Client;
+
+namespace DrinkFood_API.Models
 {
     public class RequestGetMyOrderListModel
     {
@@ -40,6 +42,8 @@
     {
         public Guid OrderID { get; set; }
 
+        public string OrderArrivalTime { get; set; } = null!;
+
         public string OrderStatus { get; set; } = null!;
 
         public string OrderStatusDesc { get; set; } = null!;
@@ -51,6 +55,10 @@
         public Guid CreateAccountID { get; set; }
 
         public string CreateName { get; set; } = null!;
+
+        public Guid BrandID { get; set; }
+
+        public string BrandName { get; set; } = null!;
 
         public Guid StoreID { get; set; }
 
@@ -89,9 +97,29 @@
     {
         public Guid OrderDetailID { get; set; }
 
+        public string? OrderDetailRemark {  get; set; }
+
         public Guid OrderID { get; set; }
 
-        public Guid OrderCreateAccountID { get; set; }
+        public string OrderArrivalTime { get; set; } = null!;
+        
+        public string OrderStatus { get; set; } = null!;
+
+        public string OrderStatusDesc { get; set; } = null!;
+
+        public Guid OrderOwnerID { get; set; }
+
+        public Guid BrandID { get; set; }
+
+        public string BrandName { get; set; } = null!;
+
+        public Guid StoreID { get; set; }
+
+        public string StoreName { get; set; } = null!;
+
+        public Guid OfficeID {  get; set; }
+
+        public string OfficeName { get; set; } = null!;
 
         public Guid DrinkFoodID { get; set; }
 

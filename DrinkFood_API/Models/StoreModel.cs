@@ -60,6 +60,8 @@
 
         public string StorePhone { get; set; }
 
+        public string PreviousOrderDate { get; set; }
+
         /// <summary>
         /// 若品牌有統一Line帳號則優先呈現，之後才是呈現店家Line帳號 (B_line_id > S_line_id)
         /// </summary>
@@ -77,6 +79,7 @@
             StoreName = Entity.S_name;
             StoreAddress = Entity.S_address;
             StorePhone = Entity.S_phone;
+            PreviousOrderDate = "-";
             LineID = Entity.B_line_id ?? Entity.S_line_id ?? null;
         }
     }

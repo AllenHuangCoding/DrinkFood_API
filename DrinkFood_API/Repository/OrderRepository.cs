@@ -37,14 +37,18 @@ namespace DrinkFood_API.Repository
         {
             return from order in _readDBContext.Order
                    join store in _readDBContext.Store on order.O_store_id equals store.S_id
+                   join brand in _readDBContext.Brand on store.S_brand_id equals brand.B_id
                    join account in _readDBContext.Account on order.O_create_account_id equals account.A_id
                    join office in _readDBContext.Office on order.O_office_id equals office.O_id
                    where order.O_status != "99" && store.S_status != "99" && account.A_status != "99" && office.O_status != "99"
                    select new ViewOrder
                    {
                        OrderID = order.O_id,
+                       OrderArrivalTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
                        OfficeID = order.O_office_id,
                        OfficeName = office.O_name,
+                       BrandID = brand.B_id,
+                       BrandName = brand.B_name,
                        StoreID = order.O_store_id,
                        StoreName = store.S_name,
                        CreateAccountID = order.O_create_account_id,

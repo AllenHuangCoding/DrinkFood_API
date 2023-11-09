@@ -17,6 +17,28 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 首頁歷史紀錄
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpGet("GetHomeOrderDetailHistory/{AccountID}/{OfficeID}")]
+        public IActionResult GetHomeOrderDetailHistory(Guid AccountID, Guid OfficeID)
+        {
+            var Response = _orderService.GetHomeOrderDetailHistory(AccountID, OfficeID);
+            return Json(new ResponseData<object?>(Response, Response.Count));
+        }
+
+        /// <summary>
+        /// 歷史紀錄
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpGet("GetOrderDetailHistory/{AccountID}")]
+        public IActionResult GetOrderDetailHistory(Guid AccountID)
+        {
+            var Response = _orderService.GetOrderDetailHistory(AccountID);
+            return Json(new ResponseData<object?>(Response, Response.Count));
+        }
+
+        /// <summary>
         /// 訂單清單
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]

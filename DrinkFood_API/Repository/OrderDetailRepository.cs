@@ -36,7 +36,7 @@ namespace DrinkFood_API.Repository
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 
-            if (orderDetail.OrderCreateAccountID != AccountID)
+            if (orderDetail.OrderOwnerID != AccountID)
             {
                 throw new ApiException("非團長權限", 400);
             }
@@ -104,11 +104,23 @@ namespace DrinkFood_API.Repository
                    join iceOption in _readDBContext.Option on orderDetail.OD_ice_id equals iceOption.O_id
                    join sizeOption in _readDBContext.Option on orderDetail.OD_size_id equals sizeOption.O_id
                    join paymentCodeTable in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on orderDetail.OD_payment_id equals paymentCodeTable.CT_id
+                   join office in _readDBContext.Office on order.O_office_id equals office.O_id
+                   join store in _readDBContext.Store on order.O_store_id equals store.S_id
+                   join brand in _readDBContext.Brand on store.S_brand_id equals brand.B_id
                    select new ViewOrderDetail
                    {
                        OrderDetailID = orderDetail.OD_id,
                        OrderID = orderDetail.OD_order_id,
-                       OrderCreateAccountID = order.O_create_account_id,
+                       OrderArrivalTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
+                       OrderStatus = order.O_status,
+                       OrderStatusDesc = "尚未設定",
+                       OrderOwnerID = order.O_create_account_id,
+                       OfficeID = order.O_office_id,
+                       OfficeName = office.O_name,
+                       StoreID = order.O_store_id,
+                       StoreName = store.S_name,
+                       BrandID = brand.B_id,
+                       BrandName = brand.B_name,
                        DrinkFoodID = orderDetail.OD_drink_food_id,
                        DrinkFoodName = drinkFood.DF_name,
                        DrinkFoodPrice = drinkFood.DF_price,
@@ -127,7 +139,7 @@ namespace DrinkFood_API.Repository
                        PaymentDesc = paymentCodeTable.CT_desc,
                        PaymentArrived = orderDetail.OD_payment_datetime.HasValue,
                        PaymentDatetime = orderDetail.OD_payment_datetime,
-                       Remark = orderDetail.OD_remark,
+                       OrderDetailRemark = orderDetail.OD_remark,
                    };
         }
 
