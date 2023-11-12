@@ -27,6 +27,10 @@ public partial class Account
 
     public bool A_is_admin {  get; set; }
 
+    public Guid? A_default_lunch_payment { get; set; }
+
+    public Guid? A_default_drink_payment { get; set; }
+
     public string A_status { get; set; }
 
     public DateTime A_create { get; set; }

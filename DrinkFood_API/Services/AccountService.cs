@@ -22,7 +22,7 @@ namespace DrinkFood_API.Services
             return new ResponseLoginModel() { Token = "" };
         }
 
-        public List<ResponseAccountListModel> GetAccountList()
+        public List<ViewAccount> GetAccountList()
         {
             return _accountRepository.GetAccountList();
         }

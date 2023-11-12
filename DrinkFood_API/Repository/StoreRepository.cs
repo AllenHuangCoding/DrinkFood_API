@@ -51,6 +51,7 @@ namespace DrinkFood_API.Repository
                        S_line_id= store.S_line_id,
                        S_menu_area_id = store.S_menu_area_id,
                        S_phone = store.S_phone,
+                       S_remark = store.S_remark,
                    };
         }
     }

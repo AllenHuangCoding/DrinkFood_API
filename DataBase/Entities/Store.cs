@@ -27,6 +27,8 @@ public partial class Store
 
     public string S_status { get; set; }
 
+    public string? S_remark { get; set; }
+
     public DateTime S_create { get; set; }
 
     public DateTime S_update { get; set; }

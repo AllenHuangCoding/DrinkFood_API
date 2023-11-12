@@ -32,12 +32,12 @@ namespace DrinkFood_API.Services
                 var lastOrder = storeOrder.Where(o =>
                     o.StoreID == item.StoreID
                 ).OrderByDescending(x =>
-                    x.DrinkTime
+                    x.ArrivalTime
                 ).FirstOrDefault();
 
                 if (lastOrder != null)
                 {
-                    item.PreviousOrderDate = lastOrder.DrinkTime;
+                    item.PreviousOrderDate = lastOrder.ArrivalTime.ToString("yyyy-MM-dd HH:mm");
                 }
             }
 

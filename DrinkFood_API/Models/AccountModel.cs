@@ -29,6 +29,29 @@ namespace DrinkFood_API.Models
         public required string Token { get; set; }
     }
 
+    public class ViewAccount
+    {
+        public Guid AccountID { get; set; }
+
+        public string Name { get; set; } = null!;
+
+        public string? Brief { get; set; }
+
+        public string Email { get; set; } = null!;
+
+        public string? LineID { get; set; }
+
+        public bool IsAdmin { get; set; }
+
+        public Guid? DefaultLunchPayment {  get; set; }
+
+        public string? DefaultLunchPaymentDesc { get; set; }
+
+        public Guid? DefaultDrinkPayment { get; set; }
+
+        public string? DefaultDrinkPaymentDesc { get; set; }
+    }
+
     public class ResponseAccountListModel
     {
         public Guid AccountID { get; set; }

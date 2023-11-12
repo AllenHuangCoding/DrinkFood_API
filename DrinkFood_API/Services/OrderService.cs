@@ -26,9 +26,9 @@ namespace DrinkFood_API.Services
             ).OrderByDescending(x => x.OrderID).ToList();
         }
 
-        public List<ViewOrder> GetOrderList()
+        public List<OrderListModel> GetOrderList()
         {
-            return _orderRepository.GetViewOrder().OrderByDescending(x => x.OrderID).ToList();
+            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x)).ToList();
         }
 
         public ViewOrderAndDetail? GetOrder(Guid OrderID)
@@ -84,18 +84,17 @@ namespace DrinkFood_API.Services
 
         #region 訂單詳細
 
-        public List<ViewOrderDetail> GetOrderDetailHistory(Guid AccountID)
+        public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
-            return _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
                 x.AccountID == AccountID
             ).ToList();
-        }
 
-        public List<ViewOrderDetail> GetHomeOrderDetailHistory(Guid AccountID, Guid OfficeID)
-        {
-            return _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.AccountID == AccountID && x.OfficeID == OfficeID
-            ).ToList();
+            var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
+
+            var order = _orderRepository.GetViewOrder().Where(x => orderIDs.Contains(x.OrderID)).ToList();
+
+            return _orderDetailRepository.CombineDetailHistory(orderDetail, order);
         }
 
         /// <summary>

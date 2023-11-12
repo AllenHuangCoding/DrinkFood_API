@@ -30,18 +30,6 @@ namespace DrinkFood_API.Repository
             }
         }
 
-        public void CheckOwnerOrder(Guid AccountID, Guid OrderDetailID)
-        {
-            var orderDetail = GetViewOrderDetail().Where(x =>
-                x.OrderDetailID == OrderDetailID
-            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
-
-            if (orderDetail.OwnerID != AccountID)
-            {
-                throw new ApiException("非團長權限", 400);
-            }
-        }
-
         public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data)
         {
             return Data.GroupBy(x => 
@@ -52,6 +40,16 @@ namespace DrinkFood_API.Repository
                     Name = x.Key,
                     OrderDetailList = x.ToList()
                 }
+            ).ToList();
+        }
+
+        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order)
+        {
+            return OrderDetail.Select(x => 
+                new ViewDetailHistory(
+                    x,
+                    Order.First(o => o.OrderID == x.OrderID)
+                )
             ).ToList();
         }
 
@@ -109,18 +107,8 @@ namespace DrinkFood_API.Repository
                    join brand in _readDBContext.Brand on store.S_brand_id equals brand.B_id
                    select new ViewOrderDetail
                    {
-                       OrderDetailID = orderDetail.OD_id,
                        OrderID = orderDetail.OD_order_id,
-                       ArrivalTime = order.O_arrival_time,
-                       OrderStatus = order.O_status,
-                       OrderStatusDesc = "尚未設定",
-                       OwnerID = order.O_create_account_id,
-                       OfficeID = order.O_office_id,
-                       OfficeName = office.O_name,
-                       StoreID = order.O_store_id,
-                       StoreName = store.S_name,
-                       BrandID = brand.B_id,
-                       BrandName = brand.B_name,
+                       OrderDetailID = orderDetail.OD_id,
                        DrinkFoodID = orderDetail.OD_drink_food_id,
                        DrinkFoodName = drinkFood.DF_name,
                        DrinkFoodPrice = drinkFood.DF_price,
@@ -137,9 +125,23 @@ namespace DrinkFood_API.Repository
                        Email = account.A_email,
                        PaymentID = orderDetail.OD_payment_id,
                        PaymentDesc = paymentCodeTable.CT_desc,
-                       PaymentArrived = orderDetail.OD_payment_datetime.HasValue,
                        PaymentDatetime = orderDetail.OD_payment_datetime,
+                       PaymentArrived = orderDetail.OD_payment_datetime.HasValue,
+                       Quantity = orderDetail.OD_quantity,
+                       IsPickup = orderDetail.OD_pickup,
                        DetailRemark = orderDetail.OD_remark,
+
+                       //OrderID = orderDetail.OD_order_id,
+                       //ArrivalTime = order.O_arrival_time,
+                       //OrderStatus = order.O_status,
+                       //OrderStatusDesc = "尚未設定",
+                       //OwnerID = order.O_create_account_id,
+                       //OfficeID = order.O_office_id,
+                       //OfficeName = office.O_name,
+                       //StoreID = order.O_store_id,
+                       //StoreName = store.S_name,
+                       //BrandID = brand.B_id,
+                       //BrandName = brand.B_name,
                    };
         }
 

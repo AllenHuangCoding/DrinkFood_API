@@ -16,15 +16,9 @@ namespace DrinkFood_API.Repository
 
         }
 
-        public List<ResponseAccountListModel> GetAccountList() 
+        public List<ViewAccount> GetAccountList() 
         {
-            return GetAll().Select(x => new ResponseAccountListModel
-            {
-                AccountID = x.A_id,
-                Name = x.A_name,
-                Brief = x.A_brief,
-                Email = x.A_email,
-            }).ToList();
+            return GetViewAccount().ToList();
         }
 
         public void UpdateProfile(UpdateProfileModel Data)
@@ -63,6 +57,28 @@ namespace DrinkFood_API.Repository
                 return null;
             }
             return account;
+        }
+
+        public IQueryable<ViewAccount> GetViewAccount()
+        {
+            return from account in _readDBContext.Account
+                   join drinkPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on account.A_default_drink_payment equals drinkPayment.CT_id into drinkPaymentGroup
+                   from drinkPayment in drinkPaymentGroup.DefaultIfEmpty()
+                   join lunchPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on account.A_default_lunch_payment equals lunchPayment.CT_id into lunchPaymentGroup
+                   from lunchPayment in lunchPaymentGroup.DefaultIfEmpty()
+                   select new ViewAccount
+                   {
+                       AccountID = account.A_id,
+                       Name = account.A_name,
+                       Brief = account.A_brief,
+                       Email = account.A_email,
+                       LineID = account.A_line_id,
+                       IsAdmin = account.A_is_admin,
+                       DefaultDrinkPayment = drinkPayment != null ? drinkPayment.CT_id : null,
+                       DefaultDrinkPaymentDesc = drinkPayment != null ? drinkPayment.CT_desc : null,
+                       DefaultLunchPayment = lunchPayment != null ? lunchPayment.CT_id : null,
+                       DefaultLunchPaymentDesc = lunchPayment != null ? lunchPayment.CT_desc : null,
+                   };
         }
     }
 }
