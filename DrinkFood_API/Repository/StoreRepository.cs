@@ -1,6 +1,7 @@
 ﻿using CodeShare.Libs.GenericEntityFramework;
 using DataBase;
 using DataBase.Entities;
+using DrinkFood_API.Exceptions;
 using DrinkFood_API.Models;
 
 namespace DrinkFood_API.Repository
@@ -13,6 +14,15 @@ namespace DrinkFood_API.Repository
         public StoreRepository(IServiceProvider provider) : base(provider)
         {
 
+        }
+
+        public ResponseStoreListModel GetStore(Guid StoreID)
+        {
+            var store = GetViewStore().Where(x =>
+                x.S_id == StoreID
+            ).FirstOrDefault() ?? throw new ApiException("店家資料不存在", 400);
+
+            return new ResponseStoreListModel(store);
         }
 
         public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel Request)

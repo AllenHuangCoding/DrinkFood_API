@@ -17,9 +17,9 @@ public partial class Office
 
     public string O_address { get; set; } = null!;
 
-    public string O_status { get; set; } = null!;
-
     public Guid O_company_id { get; set; }
+
+    public string O_status { get; set; } = null!;
 
     public DateTime O_create { get; set; }
 

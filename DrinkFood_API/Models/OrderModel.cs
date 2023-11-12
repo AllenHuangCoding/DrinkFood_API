@@ -42,19 +42,35 @@ namespace DrinkFood_API.Models
     {
         public Guid OrderID { get; set; }
 
-        public string OrderArrivalTime { get; set; } = null!;
+        public string OrderNo { get; set; } = null!;
+
+        public DateTime ArrivalTime { get; set; }
 
         public string OrderStatus { get; set; } = null!;
 
         public string OrderStatusDesc { get; set; } = null!;
 
+        public string? OrderShareUrl { get; set; }
+
+        public DateTime DrinkTime { get; set; }
+
+        public DateTime OpenTime { get; set; }
+
+        public DateTime? CloseRemindTime { get; set; }
+
+        public DateTime CloseTime { get; set; }
+
+        public string? Remark { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public Guid OwnerID { get; set; }
+
+        public string OwnerName { get; set; } = null!;
+
         public Guid OfficeID { get; set; }
 
         public string OfficeName { get; set; } = null!;
-
-        public Guid CreateAccountID { get; set; }
-
-        public string CreateName { get; set; } = null!;
 
         public Guid BrandID { get; set; }
 
@@ -63,22 +79,6 @@ namespace DrinkFood_API.Models
         public Guid StoreID { get; set; }
 
         public string StoreName { get; set; } = null!;
-
-        public string OrderNo { get; set; } = null!;
-
-        public string? OrderShareUrl { get; set; }
-
-        public string DrinkTime { get; set; } = null!;
-
-        public string OpenTime { get; set; } = null!;
-
-        public string? CloseRemindTime { get; set; }
-
-        public string CloseTime { get; set; } = null!;
-
-        public string? Remark { get; set; }
-
-        public string CreateTime { get; set; } = null!;
 
         public string SetOrderStatus(string Status)
         {
@@ -97,29 +97,19 @@ namespace DrinkFood_API.Models
     {
         public Guid OrderDetailID { get; set; }
 
-        public string? OrderDetailRemark {  get; set; }
+        public string? DetailRemark {  get; set; }
 
-        public Guid OrderID { get; set; }
+        public int Quantity { get; set; }
 
-        public string OrderArrivalTime { get; set; } = null!;
-        
-        public string OrderStatus { get; set; } = null!;
+        public bool IsPickup { get; set; }
 
-        public string OrderStatusDesc { get; set; } = null!;
+        public Guid? PaymentID { get; set; }
 
-        public Guid OrderOwnerID { get; set; }
+        public string? PaymentDesc { get; set; }
 
-        public Guid BrandID { get; set; }
+        public DateTime? PaymentDatetime { get; set; }
 
-        public string BrandName { get; set; } = null!;
-
-        public Guid StoreID { get; set; }
-
-        public string StoreName { get; set; } = null!;
-
-        public Guid OfficeID {  get; set; }
-
-        public string OfficeName { get; set; } = null!;
+        public bool? PaymentArrived { get; set; }
 
         public Guid DrinkFoodID { get; set; }
 
@@ -148,16 +138,6 @@ namespace DrinkFood_API.Models
         public string? Brief { get; set; }
 
         public string Email { get; set; } = null!;
-
-        public Guid? PaymentID { get; set; }
-
-        public string? PaymentDesc { get; set; }
-
-        public DateTime? PaymentDatetime { get; set; }
-
-        public bool? PaymentArrived { get; set; }
-
-        public string? Remark { get; set; }
     }
 
     public class RequestPostOrderDetailModel : PostOrderDetailModel
@@ -186,6 +166,10 @@ namespace DrinkFood_API.Models
     {
         public string Name { get; set; } = null!;
 
+        public int TotalPrice { get; set; }
+
+        public int TotalQuantity { get; set; }
+
         public List<ViewOrderDetail> OrderDetailList { get; set; } = new();
     }
 
@@ -213,8 +197,10 @@ namespace DrinkFood_API.Models
             OrderStatusDesc = Entity.OrderStatusDesc;
             OfficeID = Entity.OfficeID;
             OfficeName = Entity.OfficeName;
-            CreateAccountID = Entity.CreateAccountID;
-            CreateName = Entity.CreateName;
+            OwnerID = Entity.OwnerID;
+            OwnerName = Entity.OwnerName;
+            BrandID = Entity.BrandID;
+            BrandName = Entity.BrandName;
             StoreID = Entity.StoreID;
             StoreName = Entity.StoreName;
             OrderID = Entity.OrderID;
@@ -222,7 +208,7 @@ namespace DrinkFood_API.Models
             OrderShareUrl = Entity.OrderShareUrl;
             DrinkTime = Entity.DrinkTime;
             CloseTime = Entity.CloseTime;
-
+            ArrivalTime = Entity.ArrivalTime;
             Detail = EntityData;
         }
     }

@@ -36,7 +36,7 @@ namespace DrinkFood_API.Repository
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 
-            if (orderDetail.OrderOwnerID != AccountID)
+            if (orderDetail.OwnerID != AccountID)
             {
                 throw new ApiException("非團長權限", 400);
             }
@@ -111,10 +111,10 @@ namespace DrinkFood_API.Repository
                    {
                        OrderDetailID = orderDetail.OD_id,
                        OrderID = orderDetail.OD_order_id,
-                       OrderArrivalTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
+                       ArrivalTime = order.O_arrival_time,
                        OrderStatus = order.O_status,
                        OrderStatusDesc = "尚未設定",
-                       OrderOwnerID = order.O_create_account_id,
+                       OwnerID = order.O_create_account_id,
                        OfficeID = order.O_office_id,
                        OfficeName = office.O_name,
                        StoreID = order.O_store_id,
@@ -139,7 +139,7 @@ namespace DrinkFood_API.Repository
                        PaymentDesc = paymentCodeTable.CT_desc,
                        PaymentArrived = orderDetail.OD_payment_datetime.HasValue,
                        PaymentDatetime = orderDetail.OD_payment_datetime,
-                       OrderDetailRemark = orderDetail.OD_remark,
+                       DetailRemark = orderDetail.OD_remark,
                    };
         }
 

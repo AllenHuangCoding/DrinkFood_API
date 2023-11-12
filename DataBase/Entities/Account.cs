@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataBase.Entities;
@@ -22,6 +20,12 @@ public partial class Account
     public string A_email { get; set; } = null!;
 
     public string A_password { get; set; } = null!;
+
+    public string? A_line_id { get; set; }
+
+    public bool A_forget_remind { get; set; }
+
+    public bool A_is_admin {  get; set; }
 
     public string A_status { get; set; }
 

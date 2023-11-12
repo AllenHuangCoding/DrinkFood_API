@@ -15,6 +15,11 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
+        public ResponseStoreListModel GetStore(Guid StoreID)
+        {
+            return _storeRepository.GetStore(StoreID);
+        }
+
         public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel Request)
         {
             var response = _storeRepository.GetStoreList(Request);

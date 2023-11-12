@@ -22,7 +22,7 @@ namespace DrinkFood_API.Services
         public List<ViewOrder> GetMyOrderList(Guid AccountID, RequestGetMyOrderListModel Request)
         {
             return _orderRepository.GetViewOrder().Where(x => 
-                x.CreateAccountID == AccountID
+                x.OwnerID == AccountID
             ).OrderByDescending(x => x.OrderID).ToList();
         }
 
@@ -50,7 +50,7 @@ namespace DrinkFood_API.Services
                 O_no = CreateOrderNo(),
                 O_type = Request.OrderTypeID,
                 O_close_time = Request.CloseTime,
-                O_drink_time = Request.DrinkTime,
+                O_arrival_time = Request.DrinkTime,
             });
         }
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataBase.Entities;
@@ -23,9 +21,11 @@ public partial class Order
 
     public Guid O_type { get; set; }
 
+    public bool O_is_public {  get; set; }
+
     public string? O_share_url { get; set; }
 
-    public DateTime O_drink_time { get; set; }
+    public DateTime O_arrival_time { get; set; }
 
     public DateTime O_open_time { get; set; }
 

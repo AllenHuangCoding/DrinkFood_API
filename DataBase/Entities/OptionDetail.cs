@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataBase.Entities;
@@ -18,6 +16,8 @@ public partial class OptionDetail
     public Guid OD_brand_id { get; set; }
 
     public Guid OD_option_id { get; set; }
+
+    public string? OD_remark { get; set; }
 
     public DateTime OD_create { get; set; }
 

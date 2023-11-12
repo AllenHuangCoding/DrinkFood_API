@@ -19,7 +19,7 @@ namespace DrinkFood_API.Repository
         public void PutOrderTime(PutOrderTimeModel Data)
         {
             var order = GetById(Data.OrderID) ?? throw new ApiException("訂單ID不存在", 400);
-            order.O_drink_time = Data.DrinkTime;
+            order.O_arrival_time = Data.DrinkTime;
             order.O_close_time = Data.CloseTime;
             order.O_update = DateTime.Now;
             Update(Data.OrderID, order);
@@ -44,25 +44,25 @@ namespace DrinkFood_API.Repository
                    select new ViewOrder
                    {
                        OrderID = order.O_id,
-                       OrderArrivalTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
+                       ArrivalTime = order.O_arrival_time,
                        OfficeID = order.O_office_id,
                        OfficeName = office.O_name,
                        BrandID = brand.B_id,
                        BrandName = brand.B_name,
                        StoreID = order.O_store_id,
                        StoreName = store.S_name,
-                       CreateAccountID = order.O_create_account_id,
-                       CreateName = account.A_name,
+                       OwnerID = order.O_create_account_id,
+                       OwnerName = account.A_name,
                        OrderNo = order.O_no,
                        OrderStatus = order.O_status,
                        OrderStatusDesc = "尚未設定",
                        OrderShareUrl = order.O_share_url,
-                       OpenTime = order.O_open_time.ToString("yyyy-MM-dd HH:mm"),
-                       CloseTime = order.O_close_time.ToString("yyyy-MM-dd HH:mm"),
-                       CloseRemindTime = order.O_close_remind_time.HasValue ? order.O_close_remind_time.Value.ToString("yyyy-MM-dd HH:mm") : "-",
-                       DrinkTime = order.O_drink_time.ToString("yyyy-MM-dd HH:mm"),
+                       OpenTime = order.O_open_time,
+                       CloseTime = order.O_close_time,
+                       CloseRemindTime = order.O_close_remind_time,
+                       DrinkTime = order.O_arrival_time,
                        Remark = order.O_remark,
-                       CreateTime = order.O_create.ToString("yyyy-MM-dd HH:mm"),
+                       CreateTime = order.O_create,
                    };
         }
 

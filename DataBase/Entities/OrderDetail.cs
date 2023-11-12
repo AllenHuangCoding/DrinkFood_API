@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataBase.Entities;
@@ -25,9 +23,15 @@ public partial class OrderDetail
 
     public Guid OD_account_id { get; set; }
 
+    public Guid OD_create_account_id { get; set; }
+
     public Guid? OD_payment_id { get; set; }
 
     public DateTime? OD_payment_datetime { get; set; }
+
+    public int OD_quantity { get; set; }
+
+    public bool OD_pickup { get; set; }
 
     public string? OD_remark { get; set; }
 

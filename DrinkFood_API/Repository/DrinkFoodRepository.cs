@@ -27,13 +27,15 @@ namespace DrinkFood_API.Repository
 
         public List<GroupDrinkFoodModel> GroupDrinkFoodByType(List<ViewDrinkFoodModel> Data)
         {
-            return Data.GroupBy(x =>
+            return Data.GroupBy(x => new {
+                x.DrinkFoodTypeID,
                 x.DrinkFoodTypeDesc
-            ).Select(x =>
+            }).Select(x =>
                 new GroupDrinkFoodModel
                 {
-                    DrinkFoodTypeDesc = x.Key,
-                    DrinkFoodList = x.ToList()
+                    DrinkFoodTypeID = x.Key.DrinkFoodTypeID,
+                    DrinkFoodTypeDesc = x.Key.DrinkFoodTypeDesc,
+                    DrinkFoodList = x.OrderBy(x => x.DrinkFoodTypeOrder).ToList()
                 }
             ).ToList();
         }
@@ -49,6 +51,7 @@ namespace DrinkFood_API.Repository
                        MenuID = drinkFood.DF_menu_id,
                        DrinkFoodName = drinkFood.DF_name,
                        DrinkFoodTypeOrder = codeTable.CT_order,
+                       DrinkFoodTypeID = codeTable.CT_id,
                        DrinkFoodTypeDesc = codeTable.CT_desc,
                        DrinkFoodPrice = drinkFood.DF_price,
                        DrinkFoodRemark = drinkFood.DF_remark ?? "",
