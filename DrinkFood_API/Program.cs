@@ -22,6 +22,15 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 
+var environmentName = builder.Environment.EnvironmentName;
+var configRoot = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+    .Build();
+
+builder.Configuration.AddConfiguration(configRoot);
+
 #region 增加的註冊服務
 
 // 服務與工廠
