@@ -197,6 +197,8 @@
 
     public class ViewDetailHistory
     {
+        public Guid OrderDetailID { get; set; }
+
         public string ArrivalTime { get; set; }
 
         public string BrandName { get; set; }
@@ -220,6 +222,7 @@
         {
             OrderListModel listModel = new(Order);
 
+            OrderDetailID = OrderDetail.OrderDetailID;
             ArrivalTime = listModel.ArrivalTime;
             BrandName = Order.BrandName;
             BrandStoreName = listModel.BrandStoreName;
