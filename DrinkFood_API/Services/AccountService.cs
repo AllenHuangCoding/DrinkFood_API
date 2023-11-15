@@ -16,9 +16,9 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        public ResponseLoginModel? Login(RequestLoginModel Request)
+        public ResponseLoginModel? Login(RequestLoginModel RequestData)
         {
-            _ = _accountRepository.Exist(Request.Number, Request.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
+            _ = _accountRepository.Exist(RequestData.Number, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
             return new ResponseLoginModel() { Token = "" };
         }
 
@@ -33,13 +33,13 @@ namespace DrinkFood_API.Services
             return new ResponseProfileModel(account);
         }
 
-        public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel Request)
+        public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
         {
             _accountRepository.UpdateProfile(new UpdateProfileModel
             {
                 AccountID = AccountID,
-                AccountName = Request.Name,
-                AccountBrief = Request.Brief,
+                AccountName = RequestData.Name,
+                AccountBrief = RequestData.Brief,
             });
         }
     }

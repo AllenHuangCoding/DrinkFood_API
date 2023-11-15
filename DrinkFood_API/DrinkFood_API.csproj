@@ -29,4 +29,10 @@
     <Folder Include="Template\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Template\History.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

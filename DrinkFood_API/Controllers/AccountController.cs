@@ -21,9 +21,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpGet("Login")]
-        public IActionResult Login([FromQuery] RequestLoginModel Request)
+        public IActionResult Login([FromQuery] RequestLoginModel RequestData)
         {
-            var Response = _accountService.Login(Request);
+            var Response = _accountService.Login(RequestData);
             return Json(new ResponseData<object?>(Response, _accountService.SimpleResult.Count));
         }
 
@@ -54,9 +54,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPut("UpdateProfile/{AccountID}")]
-        public IActionResult UpdateProfile(Guid AccountID, [FromBody] RequestUpdateProfileModel Request)
+        public IActionResult UpdateProfile(Guid AccountID, [FromBody] RequestUpdateProfileModel RequestData)
         {
-            _accountService.UpdateProfile(AccountID, Request);
+            _accountService.UpdateProfile(AccountID, RequestData);
             return Json(new ResponseData<object?>(null));
         }
     }

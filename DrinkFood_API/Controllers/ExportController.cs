@@ -8,34 +8,34 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StoreController : BaseController
+    public class ExportController : BaseController
     {
-        [Inject] private readonly StoreService _storeService;
+        [Inject] private readonly ExportService _exportService;
 
-        public StoreController(IServiceProvider provider) : base()
+        public ExportController(IServiceProvider provider) : base()
         {
             provider.Inject(this);
         }
 
         /// <summary>
-        /// 店家詳細資料
+        /// 匯出歷史紀錄
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("GetStore/{StoreID}")]
-        public IActionResult GetStore(Guid StoreID)
+        [HttpGet("ExportOrderDetailHistory/{AccountID}")]
+        public IActionResult ExportOrderDetailHistory(Guid AccountID)
         {
-            var Response = _storeService.GetStore(StoreID);
-            return Json(new ResponseData<object?>(Response, 1));
+            return _exportService.ExportOrderDetailHistory(AccountID);
         }
 
+
         /// <summary>
-        /// 店家清單
+        /// 匯出扣款統計
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("GetStoreList")]
-        public IActionResult GetStoreList([FromQuery] RequestStoreListModel RequestData)
+        [HttpGet("ExportMonthReport")]
+        public IActionResult ExportMonthReport([FromBody] RequestMonthReportModel RequestData)
         {
-            var Response = _storeService.GetStoreList(RequestData);
+            var Response = _exportService.ExportMonthReport(RequestData);
             return Json(new ResponseData<object?>(Response, Response.Count));
         }
     }

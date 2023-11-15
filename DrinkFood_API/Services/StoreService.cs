@@ -20,9 +20,9 @@ namespace DrinkFood_API.Services
             return _storeRepository.GetStore(StoreID);
         }
 
-        public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel Request)
+        public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel RequestData)
         {
-            var response = _storeRepository.GetStoreList(Request);
+            var response = _storeRepository.GetStoreList(RequestData);
 
             var storeIDs = response.Select(x => x.StoreID).ToList();
             var storeOrder = _orderRepository.GetViewOrder().Where(x => storeIDs.Contains(x.StoreID)).ToList();

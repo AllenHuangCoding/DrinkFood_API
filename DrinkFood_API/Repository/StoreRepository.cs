@@ -25,7 +25,7 @@ namespace DrinkFood_API.Repository
             return new ResponseStoreListModel(store);
         }
 
-        public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel Request)
+        public List<ResponseStoreListModel> GetStoreList(RequestStoreListModel RequestData)
         {
             return GetViewStore().Select(x => new ResponseStoreListModel(x)).ToList();
         }

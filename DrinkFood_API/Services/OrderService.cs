@@ -19,7 +19,7 @@ namespace DrinkFood_API.Services
 
         #region 訂單
 
-        public List<ViewOrder> GetMyOrderList(Guid AccountID, RequestGetMyOrderListModel Request)
+        public List<ViewOrder> GetMyOrderList(Guid AccountID, RequestGetMyOrderListModel RequestData)
         {
             return _orderRepository.GetViewOrder().Where(x => 
                 x.OwnerID == AccountID
@@ -40,30 +40,30 @@ namespace DrinkFood_API.Services
             return new ViewOrderAndDetail(order, groupOrderDetail);
         }
 
-        public void PostOrder(RequestPostOrderModel Request)
+        public void PostOrder(RequestPostOrderModel RequestData)
         {
             _orderRepository.Create(new Order
             {
-                O_office_id = Request.OfficeID,
-                O_create_account_id = Request.CreateAccountID,
-                O_store_id = Request.StoreID,
+                O_office_id = RequestData.OfficeID,
+                O_create_account_id = RequestData.CreateAccountID,
+                O_store_id = RequestData.StoreID,
                 O_no = CreateOrderNo(),
-                O_type = Request.OrderTypeID,
-                O_close_time = Request.CloseTime,
-                O_arrival_time = Request.DrinkTime,
+                O_type = RequestData.OrderTypeID,
+                O_close_time = RequestData.CloseTime,
+                O_arrival_time = RequestData.DrinkTime,
             });
         }
 
         /// <summary>
         /// 更改喝飲料時間 or 結單時間 (限團長與本人)
         /// </summary>
-        public void PutOrderTime(Guid OrderID, RequestPutOrderTimeModel Request)
+        public void PutOrderTime(Guid OrderID, RequestPutOrderTimeModel RequestData)
         {
             _orderRepository.PutOrderTime(new PutOrderTimeModel
             {
                 OrderID = OrderID,
-                DrinkTime = Request.DrinkTime,
-                CloseTime = Request.CloseTime,
+                DrinkTime = RequestData.DrinkTime,
+                CloseTime = RequestData.CloseTime,
             });
         }
 
@@ -109,16 +109,16 @@ namespace DrinkFood_API.Services
             return _orderDetailRepository.GroupOrderDetailByName(orderDetail);
         }
 
-        public void PostOrderDetail(RequestPostOrderDetailModel Request)
+        public void PostOrderDetail(RequestPostOrderDetailModel RequestData)
         {
             _orderDetailRepository.PostOrderDetail(new PostOrderDetailModel
             {
-                OD_order_id = Request.OD_order_id,
-                OD_drink_food_id = Request.OD_drink_food_id,
-                OD_ice_id = Request.OD_ice_id,
-                OD_sugar_id = Request.OD_sugar_id,
-                OD_size_id = Request.OD_size_id,
-                OD_account_id = Request.OD_account_id,
+                OD_order_id = RequestData.OD_order_id,
+                OD_drink_food_id = RequestData.OD_drink_food_id,
+                OD_ice_id = RequestData.OD_ice_id,
+                OD_sugar_id = RequestData.OD_sugar_id,
+                OD_size_id = RequestData.OD_size_id,
+                OD_account_id = RequestData.OD_account_id,
             });
         }
 
@@ -137,17 +137,17 @@ namespace DrinkFood_API.Services
         /// <summary>
         /// 更改付款方式 (限團長)
         /// </summary>
-        public void PutPayment(Guid OrderDetailID, RequestPutPaymentModel Request)
+        public void PutPayment(Guid OrderDetailID, RequestPutPaymentModel RequestData)
         {
-            _orderDetailRepository.PutPayment(OrderDetailID, Request.PaymentID);
+            _orderDetailRepository.PutPayment(OrderDetailID, RequestData.PaymentID);
         }
 
         /// <summary>
         /// 更改付款時間 (限團長)
         /// </summary>
-        public void PutPaymentDateTime(Guid OrderDetailID, RequestPutPaymentDateTimeModel Request)
+        public void PutPaymentDateTime(Guid OrderDetailID, RequestPutPaymentDateTimeModel RequestData)
         {
-            _orderDetailRepository.PutPaymentDatetime(OrderDetailID, Request.PaymentDateTime);
+            _orderDetailRepository.PutPaymentDatetime(OrderDetailID, RequestData.PaymentDateTime);
         }
 
         #endregion
