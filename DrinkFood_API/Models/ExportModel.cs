@@ -61,4 +61,15 @@ namespace DrinkFood_API.Models
             OfficeName = Order.OfficeName;
         }
     }
+
+    public class MonthExportExcelModel
+    {
+        public string Brief { get; set; }
+
+
+        public MonthExportExcelModel(string Key) 
+        { 
+            Brief = Key;
+        }
+    }
 }

@@ -49,9 +49,14 @@ namespace DrinkFood_API.Services
                 O_store_id = RequestData.StoreID,
                 O_no = CreateOrderNo(),
                 O_type = RequestData.OrderTypeID,
+                O_arrival_time = RequestData.ArrivalTime,
+                O_open_time = RequestData.OpenTime,
                 O_close_time = RequestData.CloseTime,
-                O_arrival_time = RequestData.DrinkTime,
             });
+
+            // Line Notify / Message 開團通知
+
+            // (HangFire) 設定Line Notify / Message結單前提醒
         }
 
         /// <summary>

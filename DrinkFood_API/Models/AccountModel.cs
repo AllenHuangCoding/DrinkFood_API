@@ -41,7 +41,11 @@ namespace DrinkFood_API.Models
 
         public string? LineID { get; set; }
 
-        public bool IsAdmin { get; set; }
+        public bool LunchNotify { get; set; }
+
+        public bool DrinkNotify { get; set; }
+
+        public int CloseNotify { get; set; }
 
         public Guid? DefaultLunchPayment {  get; set; }
 
@@ -50,6 +54,8 @@ namespace DrinkFood_API.Models
         public Guid? DefaultDrinkPayment { get; set; }
 
         public string? DefaultDrinkPaymentDesc { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 
     public class ResponseAccountListModel
@@ -63,38 +69,35 @@ namespace DrinkFood_API.Models
         public string Email { get; set; } = null!;
     }
 
-    public class RequestUpdateProfileModel
+    public class AccountShareColumn
     {
-        public string Name { get; set;}
-
-        public string Brief { get; set;}
-    }
-
-    public class UpdateProfileModel 
-    {
-        public Guid AccountID { get; set; }
-
-        public string AccountName { get; set; }
-
-        public string AccountBrief { get; set; }
-    }
-
-    public class ResponseProfileModel
-    {
-        public Guid AccountID { get; set; }
-
-        public string Name { get; set; } 
-
         public string? Brief { get; set; }
 
-        public string Email { get; set; }
+        public Guid? LunchDefaultPayment { get; set; }
 
-        public ResponseProfileModel(Account Entity)
-        {
-            AccountID = Entity.A_id;
-            Name = Entity.A_name;
-            Brief = Entity.A_brief;
-            Email = Entity.A_email;
-        }
+        public Guid? DrinkDefaultPayment { get; set; }
+
+        public bool LunchNotify { get; set; }
+
+        public bool DrinkNotify { get; set; }
+
+        public int CloseNotify { get; set; }
+    }
+
+    public class RequestUpdateProfileModel : AccountShareColumn
+    {
+        
+    }
+
+    public class UpdateProfileModel : AccountShareColumn
+    {
+        public Guid AccountID { get; set; }
+    }
+
+    public class RequestCreateAccountModel : AccountShareColumn
+    {
+        public string Name { get; set; } = null!;
+
+        public string Email { get; set; } = null!;
     }
 }

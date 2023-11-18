@@ -24,8 +24,12 @@ namespace DrinkFood_API.Repository
         public void UpdateProfile(UpdateProfileModel Data)
         {
             var account = GetById(Data.AccountID) ?? throw new ApiException("使用者ID不存在", 400);
-            account.A_name = Data.AccountName;
-            account.A_brief = Data.AccountBrief;
+            account.A_brief = Data.Brief;
+            account.A_default_drink_payment = Data.DrinkDefaultPayment;
+            account.A_default_lunch_payment = Data.LunchDefaultPayment;
+            account.A_lunch_notify = Data.LunchNotify;
+            account.A_drink_notify = Data.DrinkNotify;
+            account.A_close_notify = Data.CloseNotify;
             account.A_update = DateTime.Now;
             Update(Data.AccountID, account);
         }
@@ -73,11 +77,14 @@ namespace DrinkFood_API.Repository
                        Brief = account.A_brief,
                        Email = account.A_email,
                        LineID = account.A_line_id,
-                       IsAdmin = account.A_is_admin,
+                       LunchNotify = account.A_lunch_notify,
+                       DrinkNotify = account.A_drink_notify,
+                       CloseNotify = account.A_close_notify,
                        DefaultDrinkPayment = drinkPayment != null ? drinkPayment.CT_id : null,
                        DefaultDrinkPaymentDesc = drinkPayment != null ? drinkPayment.CT_desc : null,
                        DefaultLunchPayment = lunchPayment != null ? lunchPayment.CT_id : null,
                        DefaultLunchPaymentDesc = lunchPayment != null ? lunchPayment.CT_desc : null,
+                       IsAdmin = account.A_is_admin,
                    };
         }
     }

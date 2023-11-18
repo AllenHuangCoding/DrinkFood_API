@@ -14,7 +14,9 @@
 
         public Guid OrderTypeID { get; set; }
 
-        public DateTime DrinkTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
+
+        public DateTime OpenTime { get; set; }
 
         public DateTime CloseTime { get; set; }
 

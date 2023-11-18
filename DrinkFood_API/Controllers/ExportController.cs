@@ -32,11 +32,12 @@ namespace DrinkFood_API.Controllers
         /// 匯出扣款統計
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("ExportMonthReport")]
-        public IActionResult ExportMonthReport([FromBody] RequestMonthReportModel RequestData)
+        [HttpGet("ExportMonthReport/{Month}")]
+        public IActionResult ExportMonthReport(DateTime Month)
         {
-            var Response = _exportService.ExportMonthReport(RequestData);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            return _exportService.ExportMonthReport(new RequestMonthReportModel { 
+                Month = Month
+            });
         }
     }
 }

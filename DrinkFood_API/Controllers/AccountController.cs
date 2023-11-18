@@ -39,17 +39,6 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 取得基本資料
-        /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("GetProfile/{AccountID}")]
-        public IActionResult GetProfile(Guid AccountID)
-        {
-            var Response = _accountService.GetProfile(AccountID);
-            return Json(new ResponseData<object?>(Response));
-        }
-
-        /// <summary>
         /// 修改基本資料
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
@@ -59,5 +48,18 @@ namespace DrinkFood_API.Controllers
             _accountService.UpdateProfile(AccountID, RequestData);
             return Json(new ResponseData<object?>(null));
         }
+
+
+        /// <summary>
+        /// 新增使用者
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPost("CreateAccount")]
+        public IActionResult CreateAccount([FromBody] RequestCreateAccountModel RequestData)
+        {
+            _accountService.CreateAccount(RequestData);
+            return Json(new ResponseData<object?>(null));
+        }
+
     }
 }

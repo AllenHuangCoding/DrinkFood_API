@@ -27,19 +27,34 @@ namespace DrinkFood_API.Services
             return _accountRepository.GetAccountList();
         }
 
-        public ResponseProfileModel? GetProfile(Guid AccountID)
-        {
-            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
-            return new ResponseProfileModel(account);
-        }
-
         public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
         {
             _accountRepository.UpdateProfile(new UpdateProfileModel
             {
                 AccountID = AccountID,
-                AccountName = RequestData.Name,
-                AccountBrief = RequestData.Brief,
+                Brief = RequestData.Brief,
+                LunchDefaultPayment = RequestData.LunchDefaultPayment,
+                DrinkDefaultPayment = RequestData.DrinkDefaultPayment,
+                LunchNotify = RequestData.LunchNotify,
+                DrinkNotify = RequestData.DrinkNotify,
+                CloseNotify = RequestData.CloseNotify,
+            });
+        }
+
+
+        public void CreateAccount(RequestCreateAccountModel RequestData)
+        {
+            _accountRepository.Create(new Account
+            {
+                A_name = RequestData.Name,
+                A_brief = RequestData.Brief,
+                A_email = RequestData.Email,
+                A_password = RequestData.Email,
+                A_lunch_notify = RequestData.LunchNotify,
+                A_drink_notify = RequestData.DrinkNotify,
+                A_close_notify = RequestData.CloseNotify,
+                A_default_lunch_payment = RequestData.LunchDefaultPayment,
+                A_default_drink_payment = RequestData.DrinkDefaultPayment,
             });
         }
     }
