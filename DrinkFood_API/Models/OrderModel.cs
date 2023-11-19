@@ -1,24 +1,38 @@
-﻿namespace DrinkFood_API.Models
+﻿using DrinkFood_API.Utility;
+
+namespace DrinkFood_API.Models
 {
     public class RequestGetMyOrderListModel
     {
     }
 
+    /// <summary>
+    /// 新增訂單前的下拉選單
+    /// </summary>
+    public class ResponseOrderDialogOptions
+    {
+        public List<OptionsModel> Office { get; set; }
+        public List<OptionsModel> Type { get; set; }
+        public List<OptionsModel> Store { get; set; }
+    }
+
     public class RequestPostOrderModel
     {
-        public Guid OfficeID { get; set; }
+        public required Guid OfficeID { get; set; }
 
-        public Guid CreateAccountID { get; set; }
+        public required Guid CreateAccountID { get; set; }
 
-        public Guid StoreID  { get; set; }
+        public required Guid StoreID  { get; set; }
 
-        public Guid OrderTypeID { get; set; }
+        public required Guid TypeID { get; set; }
 
-        public DateTime ArrivalTime { get; set; }
+        public required DateTime ArrivalTime { get; set; }
 
-        public DateTime OpenTime { get; set; }
+        public required DateTime OpenTime { get; set; }
 
-        public DateTime CloseTime { get; set; }
+        public required DateTime CloseTime { get; set; }
+
+        public required bool IsPublic { get; set; }
 
     }
 

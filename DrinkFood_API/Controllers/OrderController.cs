@@ -50,6 +50,17 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 新增訂單視窗的下拉選單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseOrderDialogOptions), StatusCodes.Status200OK)]
+        [HttpGet("GetCreateOrderDialogOptions")]
+        public IActionResult GetCreateOrderDialogOptions([FromQuery] Guid? TypeID)
+        {
+            ResponseOrderDialogOptions response = _orderService.GetCreateOrderDialogOptions(TypeID);
+            return Json(new ResponseData<ResponseOrderDialogOptions>(response, 1));
+        }
+
+        /// <summary>
         /// 新增訂單
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]

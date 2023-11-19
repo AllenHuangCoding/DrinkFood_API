@@ -34,10 +34,10 @@ namespace DrinkFood_API.Repository
             Update(Data.AccountID, account);
         }
 
-        public Account? Exist(string Number, string Password)
+        public Account? Exist(string Email, string Password)
         {
             var account = FindOne(x => 
-                x.A_no == Number && 
+                x.A_email == Email && 
                 x.A_password == Password && 
                 x.A_status != "99"
             );

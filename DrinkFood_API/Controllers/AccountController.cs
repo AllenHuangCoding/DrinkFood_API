@@ -19,12 +19,12 @@ namespace DrinkFood_API.Controllers
         /// <summary>
         /// 登入
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("Login")]
-        public IActionResult Login([FromQuery] RequestLoginModel RequestData)
+        [ProducesResponseType(typeof(ResponseLoginModel), StatusCodes.Status200OK)]
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] RequestLoginModel RequestData)
         {
-            var Response = _accountService.Login(RequestData);
-            return Json(new ResponseData<object?>(Response, _accountService.SimpleResult.Count));
+            ResponseLoginModel Response = _accountService.Login(RequestData);
+            return Json(new ResponseData<ResponseLoginModel>(Response, _accountService.SimpleResult.Count));
         }
 
         /// <summary>

@@ -16,10 +16,16 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        public ResponseLoginModel? Login(RequestLoginModel RequestData)
+        public ResponseLoginModel Login(RequestLoginModel RequestData)
         {
-            _ = _accountRepository.Exist(RequestData.Number, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
-            return new ResponseLoginModel() { Token = "" };
+            var user = _accountRepository.Exist(RequestData.Email, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
+            
+            return new ResponseLoginModel() { 
+                Token = "", 
+                AccountID = user.A_id, 
+                Name = user.A_name, 
+                Brief = user.A_brief 
+            };
         }
 
         public List<ViewAccount> GetAccountList()

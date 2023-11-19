@@ -1,8 +1,10 @@
-﻿using DataBase.Entities;
+﻿using Aspose.Cells;
+using DataBase.Entities;
 using DrinkFood_API.Exceptions;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
+using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Services
 {
@@ -11,6 +13,12 @@ namespace DrinkFood_API.Services
         [Inject] private readonly OrderRepository _orderRepository;
 
         [Inject] private readonly OrderDetailRepository _orderDetailRepository;
+
+        [Inject] private readonly OfficeRepository _officeRepository;
+
+        [Inject] private readonly CodeTableRepository _codeTableRepository;
+
+        [Inject] private readonly StoreRepository _storeRepository;
 
         public OrderService(IServiceProvider provider) : base()
         {
@@ -40,6 +48,16 @@ namespace DrinkFood_API.Services
             return new ViewOrderAndDetail(order, groupOrderDetail);
         }
 
+        public ResponseOrderDialogOptions GetCreateOrderDialogOptions(Guid? TypeID)
+        {
+            return new ResponseOrderDialogOptions
+            {
+                Office = _officeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
+                Type = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").Select(x => new OptionsModel(x)).ToList(),
+                Store = _storeRepository.GetViewStore().Select(x => new ResponseStoreListModel(x)).Select(x => new OptionsModel(x)).ToList()
+            };
+        }
+
         public void PostOrder(RequestPostOrderModel RequestData)
         {
             _orderRepository.Create(new Order
@@ -48,10 +66,11 @@ namespace DrinkFood_API.Services
                 O_create_account_id = RequestData.CreateAccountID,
                 O_store_id = RequestData.StoreID,
                 O_no = CreateOrderNo(),
-                O_type = RequestData.OrderTypeID,
+                O_type = RequestData.TypeID,
                 O_arrival_time = RequestData.ArrivalTime,
                 O_open_time = RequestData.OpenTime,
                 O_close_time = RequestData.CloseTime,
+                O_is_public = RequestData.IsPublic,
             });
 
             // Line Notify / Message 開團通知

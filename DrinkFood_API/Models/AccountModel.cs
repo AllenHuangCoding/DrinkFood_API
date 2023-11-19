@@ -8,9 +8,9 @@ namespace DrinkFood_API.Models
     public class RequestLoginModel
     {
         /// <summary>
-        /// 員工編號
+        /// 員工信箱
         /// </summary>
-        public required string Number { get; set; }
+        public required string Email { get; set; }
         
         /// <summary>
         /// 密碼
@@ -23,10 +23,16 @@ namespace DrinkFood_API.Models
     /// </summary>
     public class ResponseLoginModel
     {
+        public Guid AccountID { get; set; }
+
         /// <summary>
         /// Token字串
         /// </summary>
-        public required string Token { get; set; }
+        public string Token { get; set; } = null!;
+
+        public string Name { get; set; } = null!;
+
+        public string? Brief { get; set; }
     }
 
     public class ViewAccount
