@@ -19,45 +19,34 @@ namespace DrinkFood_API.Controllers
         /// <summary>
         /// 歷史紀錄
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ViewDetailHistory>), StatusCodes.Status200OK)]
         [HttpGet("GetOrderDetailHistory/{AccountID}")]
         public IActionResult GetOrderDetailHistory(Guid AccountID)
         {
-            var Response = _orderService.GetOrderDetailHistory(AccountID);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<ViewDetailHistory> Response = _orderService.GetOrderDetailHistory(AccountID);
+            return Json(new ResponseData<List<ViewDetailHistory>>(Response, Response.Count));
         }
 
         /// <summary>
         /// 訂單清單
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OrderListModel>), StatusCodes.Status200OK)]
         [HttpGet("GetOrderList")]
         public IActionResult GetOrderList()
         {
-            var Response = _orderService.GetOrderList();
-            return Json(new ResponseData<object?>(Response, Response.Count));
-        }
-
-        /// <summary>
-        /// 自己開團的清單
-        /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("GetMyOrderList/{AccountID}")]
-        public IActionResult GetMyOrderList(Guid AccountID, [FromQuery] RequestGetMyOrderListModel RequestData)
-        {
-            var Response = _orderService.GetMyOrderList(AccountID, RequestData);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<OrderListModel> Response = _orderService.GetOrderList();
+            return Json(new ResponseData<List<OrderListModel>>(Response, Response.Count));
         }
 
         /// <summary>
         /// 單筆清單詳細
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ViewOrderAndDetail), StatusCodes.Status200OK)]
         [HttpGet("GetOrder/{OrderID}")]
         public IActionResult GetOrder(Guid OrderID)
         {
-            var Response = _orderService.GetOrder(OrderID);
-            return Json(new ResponseData<object?>(Response, 1));
+            ViewOrderAndDetail Response = _orderService.GetOrder(OrderID);
+            return Json(new ResponseData<ViewOrderAndDetail>(Response, 1));
         }
 
         /// <summary>

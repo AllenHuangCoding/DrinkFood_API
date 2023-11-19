@@ -30,12 +30,12 @@ namespace DrinkFood_API.Controllers
         /// <summary>
         /// 登入
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ViewAccount>), StatusCodes.Status200OK)]
         [HttpGet("GetAccountList")]
         public IActionResult GetAccountList()
         {
             var Response = _accountService.GetAccountList();
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            return Json(new ResponseData<List<ViewAccount>>(Response, Response.Count));
         }
 
         /// <summary>

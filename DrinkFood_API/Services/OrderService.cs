@@ -31,7 +31,7 @@ namespace DrinkFood_API.Services
             return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x)).ToList();
         }
 
-        public ViewOrderAndDetail? GetOrder(Guid OrderID)
+        public ViewOrderAndDetail GetOrder(Guid OrderID)
         {
             var order = _orderRepository.GetViewOrder().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
 

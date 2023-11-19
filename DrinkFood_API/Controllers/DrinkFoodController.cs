@@ -1,6 +1,6 @@
 ﻿using DrinkFood_API.Model;
+    using DrinkFood_API.Models;
 using DrinkFood_API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DrinkFood_API.Controllers
@@ -19,12 +19,12 @@ namespace DrinkFood_API.Controllers
         /// <summary>
         /// 取得店家品項
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GroupDrinkFoodModel>), StatusCodes.Status200OK)]
         [HttpGet("GetDrinkFoodList/{StoreID}")]
         public IActionResult GetDrinkFoodList(Guid StoreID)
         {
-            var Response = _drinkFoodService.GetDrinkFoodList(StoreID);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<GroupDrinkFoodModel> Response = _drinkFoodService.GetDrinkFoodList(StoreID);
+            return Json(new ResponseData<List<GroupDrinkFoodModel>>(Response, Response.Count));
         }
 
     }

@@ -21,7 +21,7 @@ namespace DrinkFood_API.Services
             return _menuRepository.GetBrandMenuList(BrandID);
         }
 
-        public ViewMenu? GetStoreMenu(Guid StoreID)
+        public ViewMenu GetStoreMenu(Guid StoreID)
         {
             return _menuRepository.GetStoreMenu(StoreID);
         }

@@ -20,23 +20,23 @@ namespace DrinkFood_API.Controllers
         /// <summary>
         /// 店家詳細資料
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseStoreListModel), StatusCodes.Status200OK)]
         [HttpGet("GetStore/{StoreID}")]
         public IActionResult GetStore(Guid StoreID)
         {
-            var Response = _storeService.GetStore(StoreID);
-            return Json(new ResponseData<object?>(Response, 1));
+            ResponseStoreListModel Response = _storeService.GetStore(StoreID);
+            return Json(new ResponseData<ResponseStoreListModel>(Response, 1));
         }
 
         /// <summary>
         /// 店家清單
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ResponseStoreListModel>), StatusCodes.Status200OK)]
         [HttpGet("GetStoreList")]
         public IActionResult GetStoreList([FromQuery] RequestStoreListModel RequestData)
         {
-            var Response = _storeService.GetStoreList(RequestData);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<ResponseStoreListModel> Response = _storeService.GetStoreList(RequestData);
+            return Json(new ResponseData<List<ResponseStoreListModel>>(Response, Response.Count));
         }
     }
 }
