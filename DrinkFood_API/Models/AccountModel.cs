@@ -1,4 +1,5 @@
 ﻿using DataBase.Entities;
+using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Models
 {
@@ -105,5 +106,13 @@ namespace DrinkFood_API.Models
         public string Name { get; set; } = null!;
 
         public string Email { get; set; } = null!;
+    }
+
+
+    public class ResponseProfileDialogOptions
+    {
+        public List<OptionsModel> LunchPayment { get; set; }
+
+        public List<OptionsModel> DrinkPayment { get; set; }
     }
 }

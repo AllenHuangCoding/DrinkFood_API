@@ -13,13 +13,13 @@ public partial class OrderDetail
 
     public Guid OD_order_id { get; set; }
 
-    public Guid OD_drink_food_id { get; set; }
+    public Guid? OD_drink_food_id { get; set; }
 
-    public Guid OD_sugar_id { get; set; }
+    public Guid? OD_sugar_id { get; set; }
 
-    public Guid OD_ice_id { get; set; }
+    public Guid? OD_ice_id { get; set; }
 
-    public Guid OD_size_id { get; set; }
+    public Guid? OD_size_id { get; set; }
 
     public Guid OD_account_id { get; set; }
 
@@ -29,9 +29,9 @@ public partial class OrderDetail
 
     public DateTime? OD_payment_datetime { get; set; }
 
-    public int OD_quantity { get; set; }
+    public int? OD_quantity { get; set; }
 
-    public bool OD_pickup { get; set; }
+    public bool? OD_pickup { get; set; }
 
     public string? OD_remark { get; set; }
 

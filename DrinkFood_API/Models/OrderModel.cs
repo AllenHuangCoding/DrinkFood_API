@@ -1,4 +1,5 @@
-﻿using DrinkFood_API.Utility;
+﻿using DataBase.Entities;
+using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Models
 {
@@ -121,6 +122,12 @@ namespace DrinkFood_API.Models
     {
         public string BrandStoreName { get; set; }
 
+        public string OfficeOwner { get; set; }
+
+        public string IsPublicDesc { get; set; } = null!;
+
+        public string StatusDescPublicDesc { get; set; } = null!;
+
         public new string ArrivalTime { get; set; }
 
         public new string CloseTime { get; set; }
@@ -154,6 +161,9 @@ namespace DrinkFood_API.Models
             StoreAddress = Entity.StoreAddress;
 
             BrandStoreName = $"{BrandName} {StoreName}";
+            OfficeOwner = $"{OfficeName} {OwnerName}";
+            IsPublicDesc = Entity.IsPublic ? "公團" : "私團";
+            StatusDescPublicDesc = $"{OrderStatusDesc} {IsPublicDesc}";
             ArrivalTime = Entity.ArrivalTime.ToString("yyyy-MM-dd HH:mm");
             CloseTime = Entity.CloseTime.ToString("yyyy-MM-dd HH:mm");
             CreateTime = Entity.CreateTime.ToString("yyyy-MM-dd HH:mm");
@@ -168,7 +178,7 @@ namespace DrinkFood_API.Models
 
         public Guid OrderID {  get; set; }
 
-        public Guid DrinkFoodID { get; set; }
+        public Guid? DrinkFoodID { get; set; }
 
         public string DrinkFoodName { get; set; } = null!;
 
@@ -176,15 +186,15 @@ namespace DrinkFood_API.Models
 
         public string? DrinkFoodRemark { get; set; }
 
-        public Guid SugarID { get; set; }
+        public Guid? SugarID { get; set; }
 
         public string SugarDesc { get; set; } = null!;
 
-        public Guid IceID { get; set; }
+        public Guid? IceID { get; set; }
 
         public string IceDesc { get; set; } = null!;
 
-        public Guid SizeID { get; set; }
+        public Guid? SizeID { get; set; }
 
         public string SizeDesc { get; set; } = null!;
 
@@ -204,9 +214,9 @@ namespace DrinkFood_API.Models
 
         public bool? PaymentArrived { get; set; }
 
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
-        public bool IsPickup { get; set; }
+        public bool? IsPickup { get; set; }
 
         public string? DetailRemark { get; set; }
     }
@@ -229,7 +239,7 @@ namespace DrinkFood_API.Models
 
         public string? PaymentDesc { get; set; }
 
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         public string OfficeName { get; set; }
 

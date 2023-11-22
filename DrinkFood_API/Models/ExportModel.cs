@@ -34,7 +34,7 @@ namespace DrinkFood_API.Models
         public int DrinkFoodPrice { get; set; }
 
         [Column(Order = 7)]
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         [Column(Order = 8)]
         public string? DetailRemark { get; set; }

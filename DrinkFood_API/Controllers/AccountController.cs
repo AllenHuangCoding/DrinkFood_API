@@ -28,7 +28,7 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 登入
+        /// 取得使用者清單
         /// </summary>
         [ProducesResponseType(typeof(List<ViewAccount>), StatusCodes.Status200OK)]
         [HttpGet("GetAccountList")]
@@ -47,6 +47,17 @@ namespace DrinkFood_API.Controllers
         {
             _accountService.UpdateProfile(AccountID, RequestData);
             return Json(new ResponseData<object?>(null));
+        }
+
+        /// <summary>
+        /// 修改基本資料選單 (午餐付款方式、飲料付款方式)
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseProfileDialogOptions), StatusCodes.Status200OK)]
+        [HttpGet("GetProfileDialogOptions")]
+        public IActionResult GetProfileDialogOptions()
+        {
+            var Response = _accountService.GetProfileDialogOptions();
+            return Json(new ResponseData<ResponseProfileDialogOptions>(Response, 1));
         }
 
 

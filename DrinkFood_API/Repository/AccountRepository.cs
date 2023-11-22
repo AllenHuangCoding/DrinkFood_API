@@ -66,9 +66,9 @@ namespace DrinkFood_API.Repository
         public IQueryable<ViewAccount> GetViewAccount()
         {
             return from account in _readDBContext.Account
-                   join drinkPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on account.A_default_drink_payment equals drinkPayment.CT_id into drinkPaymentGroup
+                   join drinkPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "DrinkPayment") on account.A_default_drink_payment equals drinkPayment.CT_id into drinkPaymentGroup
                    from drinkPayment in drinkPaymentGroup.DefaultIfEmpty()
-                   join lunchPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on account.A_default_lunch_payment equals lunchPayment.CT_id into lunchPaymentGroup
+                   join lunchPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "LunchPayment") on account.A_default_lunch_payment equals lunchPayment.CT_id into lunchPaymentGroup
                    from lunchPayment in lunchPaymentGroup.DefaultIfEmpty()
                    select new ViewAccount
                    {

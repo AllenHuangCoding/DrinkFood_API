@@ -36,6 +36,7 @@ namespace DrinkFood_API.Services
 
         public List<OrderListModel> GetOrderList()
         {
+            // 開團清單 = 公團 + 私團
             return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x)).ToList();
         }
 
@@ -53,7 +54,7 @@ namespace DrinkFood_API.Services
             return new ResponseOrderDialogOptions
             {
                 Office = _officeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
-                Type = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").Select(x => new OptionsModel(x)).ToList(),
+                Type = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
                 Store = _storeRepository.GetViewStore().Select(x => new ResponseStoreListModel(x)).Select(x => new OptionsModel(x)).ToList()
             };
         }
@@ -73,9 +74,24 @@ namespace DrinkFood_API.Services
                 O_is_public = RequestData.IsPublic,
             });
 
-            // Line Notify / Message 開團通知
+            // 公團的 Line Notify / Email 開團通知
 
             // (HangFire) 設定Line Notify / Message結單前提醒
+        }
+
+        /// <summary>
+        /// 點連結自行加入訂單
+        /// </summary>
+        /// <param name="OrderID"></param>
+        public void JoinOrder(Guid OrderID)
+        {
+            // 加入訂單
+            _orderDetailRepository.Create(new OrderDetail
+            {
+                OD_order_id = OrderID,
+                OD_account_id = Guid.NewGuid(),
+                OD_create_account_id = Guid.NewGuid(),
+            });
         }
 
         /// <summary>

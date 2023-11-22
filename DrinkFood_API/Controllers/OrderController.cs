@@ -72,6 +72,17 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 加入訂單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPost("JoinOrder/{OrderID}")]
+        public IActionResult JoinOrder(Guid OrderID)
+        {
+            _orderService.JoinOrder(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
         /// 修改訂單時間
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]

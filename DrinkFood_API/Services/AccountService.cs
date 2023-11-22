@@ -4,12 +4,15 @@ using DrinkFood_API.Model;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
+using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Services
 {
     public class AccountService : BaseService
     {
         [Inject] private readonly AccountRepository _accountRepository;
+
+        [Inject] private readonly CodeTableRepository _codeTableRepository;
 
         public AccountService(IServiceProvider provider)  : base()
         {
@@ -31,6 +34,16 @@ namespace DrinkFood_API.Services
         public List<ViewAccount> GetAccountList()
         {
             return _accountRepository.GetAccountList();
+        }
+
+
+        public ResponseProfileDialogOptions GetProfileDialogOptions()
+        {
+            return new ResponseProfileDialogOptions
+            {
+                LunchPayment = _codeTableRepository.FindAll(x => x.CT_type == "LunchPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+                DrinkPayment = _codeTableRepository.FindAll(x => x.CT_type == "DrinkPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+            };
         }
 
         public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
