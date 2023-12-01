@@ -95,16 +95,19 @@ namespace DrinkFood_API.Services
         }
 
         /// <summary>
-        /// 更改喝飲料時間 or 結單時間 (限團長與本人)
+        /// 更改用餐時間 (限團長)
         /// </summary>
-        public void PutOrderTime(Guid OrderID, RequestPutOrderTimeModel RequestData)
+        public void PutArrivalTime(Guid OrderID, RequestPutArrivalTimeModel RequestData)
         {
-            _orderRepository.PutOrderTime(new PutOrderTimeModel
-            {
-                OrderID = OrderID,
-                DrinkTime = RequestData.DrinkTime,
-                CloseTime = RequestData.CloseTime,
-            });
+            _orderRepository.PutArrivalTime(OrderID, RequestData.ArrivalTime);
+        }
+
+        /// <summary>
+        /// 更改結單時間 (限團長)
+        /// </summary>
+        public void PutCloseTime(Guid OrderID, RequestPutCloseTimeModel RequestData)
+        {
+            _orderRepository.PutCloseTime(OrderID,RequestData.CloseTime);
         }
 
         /// <summary>

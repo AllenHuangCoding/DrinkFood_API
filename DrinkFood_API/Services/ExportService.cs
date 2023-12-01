@@ -60,8 +60,8 @@ namespace DrinkFood_API.Services
 
             // 如何將不固定Title的寫成套件轉Excel?
             var excel = new ExportExcel("./Template", "EmptyMonth.xlsx");
-            excel.SetHeader(Month.GenerateDatesInMonth(sd.Year, sd.Month), 0, 0, 1);
-            excel.SetHeader(Month.GetDaysOfWeekInMonth(sd.Year, sd.Month), 0, 1, 1);
+            //excel.SetHeader(Month.GenerateDatesInMonth(sd.Year, sd.Month), 0, 0, 1);
+            //excel.SetHeader(Month.GetDaysOfWeekInMonth(sd.Year, sd.Month), 0, 1, 1);
 
             //List<Action> list = new List<Action>()
             //{

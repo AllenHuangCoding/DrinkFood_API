@@ -83,13 +83,24 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 修改訂單時間
+        /// 修改用餐時間
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpPut("PutOrderTime/{OrderID}")]
-        public IActionResult PutOrderTime(Guid OrderID, [FromBody] RequestPutOrderTimeModel RequestData)
+        [HttpPut("PutArrivalTime/{OrderID}")]
+        public IActionResult PutArrivalTime(Guid OrderID, [FromBody] RequestPutArrivalTimeModel RequestData)
         {
-            _orderService.PutOrderTime(OrderID, RequestData);
+            _orderService.PutArrivalTime(OrderID, RequestData);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 修改結單時間
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("PutCloseTime/{OrderID}")]
+        public IActionResult PutCloseTime(Guid OrderID, [FromBody] RequestPutCloseTimeModel RequestData)
+        {
+            _orderService.PutCloseTime(OrderID, RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
 

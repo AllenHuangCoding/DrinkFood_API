@@ -16,13 +16,20 @@ namespace DrinkFood_API.Repository
             
         }
 
-        public void PutOrderTime(PutOrderTimeModel Data)
+        public void PutArrivalTime(Guid OrderID, DateTime time)
         {
-            var order = GetById(Data.OrderID) ?? throw new ApiException("訂單ID不存在", 400);
-            order.O_arrival_time = Data.DrinkTime;
-            order.O_close_time = Data.CloseTime;
+            var order = GetById(OrderID) ?? throw new ApiException("訂單ID不存在", 400);
+            order.O_arrival_time = time;
             order.O_update = DateTime.Now;
-            Update(Data.OrderID, order);
+            Update(OrderID, order);
+        }
+
+        public void PutCloseTime(Guid OrderID, DateTime time)
+        {
+            var order = GetById(OrderID) ?? throw new ApiException("訂單ID不存在", 400);
+            order.O_close_time = time;
+            order.O_update = DateTime.Now;
+            Update(OrderID, order);
         }
 
         public void CloseOrder(Guid OrderID)

@@ -37,10 +37,13 @@ namespace DrinkFood_API.Models
 
     }
 
-    public class RequestPutOrderTimeModel
+    public class RequestPutArrivalTimeModel
     {
-        public DateTime DrinkTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
+    }
 
+    public class RequestPutCloseTimeModel
+    {
         public DateTime CloseTime { get; set; }
     }
 
@@ -106,16 +109,6 @@ namespace DrinkFood_API.Models
         public string StorePhone { get; set; } = null!;
 
         public string StoreAddress { get; set; } = null!;
-
-        public string SetOrderStatus(string Status)
-        {
-            return Status switch
-            {
-                "99" => "刪除",
-                "98" => "關閉",
-                _ => "",
-            };
-        }
     }
 
     public class OrderListModel : ViewOrder
@@ -124,9 +117,9 @@ namespace DrinkFood_API.Models
 
         public string OfficeOwner { get; set; }
 
-        public string IsPublicDesc { get; set; } = null!;
+        public string StatusDescPublicDesc { get; set; }
 
-        public string StatusDescPublicDesc { get; set; } = null!;
+        public string IsPublicDesc { get; set; } = null!;
 
         public new string ArrivalTime { get; set; }
 
@@ -134,8 +127,18 @@ namespace DrinkFood_API.Models
 
         public new string CreateTime { get; set; }
 
+        public bool CanAdd { get; set; } = false;
+
+        public bool CanClose { get; set; } = false;
+
+        public bool DelayArrival { get; set; } = false;
+
+        public bool DelayClose { get; set; } = false;
+
         public OrderListModel(ViewOrder Entity)
         {
+            #region 原始欄位
+
             OrderID = Entity.OrderID;
             OwnerID = Entity.OwnerID;
             OwnerName = Entity.OwnerName;
@@ -160,13 +163,44 @@ namespace DrinkFood_API.Models
             StorePhone = Entity.StorePhone;
             StoreAddress = Entity.StoreAddress;
 
-            BrandStoreName = $"{BrandName} {StoreName}";
-            OfficeOwner = $"{OfficeName} {OwnerName}";
+            #endregion
+
+            #region 轉換欄位
+
+            OrderStatusDesc = OrderStatus switch
+            {
+                "99" => "刪除",
+                "98" => "關閉",
+                "01" => DateTime.Now > Entity.CloseTime ? "已結單" : "開放點餐",
+                _ => "",
+            };
             IsPublicDesc = Entity.IsPublic ? "公團" : "私團";
-            StatusDescPublicDesc = $"{OrderStatusDesc} {IsPublicDesc}";
             ArrivalTime = Entity.ArrivalTime.ToString("yyyy-MM-dd HH:mm");
             CloseTime = Entity.CloseTime.ToString("yyyy-MM-dd HH:mm");
             CreateTime = Entity.CreateTime.ToString("yyyy-MM-dd HH:mm");
+
+            #endregion
+
+            #region 合併欄位
+
+            BrandStoreName = $"{BrandName} {StoreName}";
+            OfficeOwner = $"{OfficeName} {OwnerName}";
+            StatusDescPublicDesc = $"{OrderStatusDesc} {IsPublicDesc}";
+
+            #endregion
+
+            #region 狀態控制欄位
+
+            bool IsOwner = true;
+            if (OrderStatus != "98" && IsOwner)
+            {
+                CanAdd = true;
+                CanClose = true;
+                DelayArrival = true;
+                DelayClose = true;
+            }
+
+            #endregion
         }
     }
 
@@ -219,6 +253,16 @@ namespace DrinkFood_API.Models
         public bool? IsPickup { get; set; }
 
         public string? DetailRemark { get; set; }
+    }
+
+    public class OrderDetailListModel : ViewOrderDetail
+    {
+        public bool CanDelete { get; set; }
+
+        public OrderDetailListModel(ViewOrderDetail Entity) 
+        { 
+            
+        }
     }
 
     public class ViewDetailHistory
