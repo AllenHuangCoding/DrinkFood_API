@@ -7,35 +7,57 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : BaseController
+    public class OrderController : CheckTokenController
     {
         [Inject] private readonly OrderService _orderService;
 
-        public OrderController(IServiceProvider provider) : base()
+        public OrderController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }
 
         /// <summary>
-        /// 自己開團的清單
+        /// 歷史紀錄
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpGet("GetMyOrderList/{AccountID}")]
-        public IActionResult GetMyOrderList(Guid AccountID, [FromQuery] RequestGetMyOrderListModel Request)
+        [ProducesResponseType(typeof(List<ViewDetailHistory>), StatusCodes.Status200OK)]
+        [HttpGet("GetOrderDetailHistory/{AccountID}")]
+        public IActionResult GetOrderDetailHistory(Guid AccountID)
         {
-            var Response = _orderService.GetMyOrderList(AccountID, Request);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<ViewDetailHistory> Response = _orderService.GetOrderDetailHistory(AccountID);
+            return Json(new ResponseData<List<ViewDetailHistory>>(Response, Response.Count));
+        }
+
+        /// <summary>
+        /// 訂單清單
+        /// </summary>
+        [ProducesResponseType(typeof(List<OrderListModel>), StatusCodes.Status200OK)]
+        [HttpGet("GetOrderList")]
+        public IActionResult GetOrderList()
+        {
+            List<OrderListModel> Response = _orderService.GetOrderList();
+            return Json(new ResponseData<List<OrderListModel>>(Response, Response.Count));
         }
 
         /// <summary>
         /// 單筆清單詳細
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ViewOrderAndDetail), StatusCodes.Status200OK)]
         [HttpGet("GetOrder/{OrderID}")]
         public IActionResult GetOrder(Guid OrderID)
         {
-            var Response = _orderService.GetOrder(OrderID);
-            return Json(new ResponseData<object?>(Response, 1));
+            ViewOrderAndDetail Response = _orderService.GetOrder(OrderID);
+            return Json(new ResponseData<ViewOrderAndDetail>(Response, 1));
+        }
+
+        /// <summary>
+        /// 新增訂單視窗的下拉選單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseOrderDialogOptions), StatusCodes.Status200OK)]
+        [HttpGet("GetCreateOrderDialogOptions")]
+        public IActionResult GetCreateOrderDialogOptions([FromQuery] Guid? TypeID)
+        {
+            ResponseOrderDialogOptions response = _orderService.GetCreateOrderDialogOptions(TypeID);
+            return Json(new ResponseData<ResponseOrderDialogOptions>(response, 1));
         }
 
         /// <summary>
@@ -43,20 +65,42 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPost("PostOrder")]
-        public IActionResult PostOrder([FromBody] RequestPostOrderModel Request)
+        public IActionResult PostOrder([FromBody] RequestPostOrderModel RequestData)
         {
-            _orderService.PostOrder(Request);
+            _orderService.PostOrder(RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
 
         /// <summary>
-        /// 修改訂單時間
+        /// 加入訂單
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpPut("PutOrderTime/{OrderID}")]
-        public IActionResult PutOrderTime(Guid OrderID, [FromBody] RequestPutOrderTimeModel Request)
+        [HttpPost("JoinOrder/{OrderID}")]
+        public IActionResult JoinOrder(Guid OrderID)
         {
-            _orderService.PutOrderTime(OrderID, Request);
+            _orderService.JoinOrder(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 修改用餐時間
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("PutArrivalTime/{OrderID}")]
+        public IActionResult PutArrivalTime(Guid OrderID, [FromBody] RequestPutArrivalTimeModel RequestData)
+        {
+            _orderService.PutArrivalTime(OrderID, RequestData);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 修改結單時間
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("PutCloseTime/{OrderID}")]
+        public IActionResult PutCloseTime(Guid OrderID, [FromBody] RequestPutCloseTimeModel RequestData)
+        {
+            _orderService.PutCloseTime(OrderID, RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
 
@@ -76,9 +120,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPost("PostOrderDetail")]
-        public IActionResult PostOrderDetail([FromBody] RequestPostOrderDetailModel Request)
+        public IActionResult PostOrderDetail([FromBody] RequestPostOrderDetailModel RequestData)
         {
-            _orderService.PostOrderDetail(Request);
+            _orderService.PostOrderDetail(RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
 
@@ -98,9 +142,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPut("PutPayment/{OrderDetailID}")]
-        public IActionResult PutPayment(Guid OrderDetailID, [FromBody] RequestPutPaymentModel Request)
+        public IActionResult PutPayment(Guid OrderDetailID, [FromBody] RequestPutPaymentModel RequestData)
         {
-            _orderService.PutPayment(OrderDetailID, Request);
+            _orderService.PutPayment(OrderDetailID, RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
 
@@ -109,9 +153,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPut("PutPaymentDateTime/{OrderDetailID}")]
-        public IActionResult PutPaymentDateTime(Guid OrderDetailID, [FromBody] RequestPutPaymentDateTimeModel Request)
+        public IActionResult PutPaymentDateTime(Guid OrderDetailID, [FromBody] RequestPutPaymentDateTimeModel RequestData)
         {
-            _orderService.PutPaymentDateTime(OrderDetailID, Request);
+            _orderService.PutPaymentDateTime(OrderDetailID, RequestData);
             return Json(new ResponseData<object?>(null, 1));
         }
     }

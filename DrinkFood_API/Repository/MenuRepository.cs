@@ -35,13 +35,15 @@ namespace DrinkFood_API.Repository
             ).ToList();
         }
 
-        public ViewMenu? GetStoreMenu(Guid StoreID)
+        public ViewMenu GetStoreMenu(Guid StoreID)
         {
             var store = _storeRepository.FindOne(x => x.S_id == StoreID) ?? throw new ApiException("商店ID不存在", 400);
-
-            return GetViewMenu().Where(x =>
+            
+            var menu = GetViewMenu().Where(x =>
                 x.BrandID == store.S_brand_id && x.MenuAreaID == store.S_menu_area_id
             ).FirstOrDefault() ?? throw new ApiException("店家菜單不存在", 400);
+
+            return menu;
         }
 
         public IQueryable<ViewMenu> GetViewMenu()

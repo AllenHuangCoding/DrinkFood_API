@@ -15,6 +15,8 @@
 
         public int DrinkFoodTypeOrder { get; set; } 
 
+        public Guid DrinkFoodTypeID { get; set; }
+
         public string DrinkFoodTypeDesc { get; set; } = null!;
 
         public int DrinkFoodPrice { get; set; }
@@ -24,6 +26,8 @@
 
     public class GroupDrinkFoodModel
     {
+        public Guid DrinkFoodTypeID { get; set; }
+
         public string DrinkFoodTypeDesc { get; set; } = null!;
 
         public List<ViewDrinkFoodModel> DrinkFoodList { get; set; } = new();

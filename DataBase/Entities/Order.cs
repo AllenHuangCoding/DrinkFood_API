@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataBase.Entities;
@@ -23,17 +21,26 @@ public partial class Order
 
     public Guid O_type { get; set; }
 
+    public bool O_is_public {  get; set; }
+
+    public string? O_share_url { get; set; }
+
+    public DateTime O_arrival_time { get; set; }
+
+    public DateTime O_open_time { get; set; }
+
+    public DateTime O_close_time { get; set; }
+
+    public DateTime? O_close_remind_time { get; set; }
+
+    public string? O_remark { get; set; }
+
     /// <summary>
+    /// <para>01: 正常 (開放點餐/已結單)</para>
     /// <para>98: 關閉</para>
     /// <para>99: 刪除</para>
     /// </summary>
     public string O_status { get; set; }
-
-    public string? O_share_url { get; set; }
-
-    public DateTime O_close_time { get; set; }
-
-    public DateTime O_drink_time { get; set; }
 
     public DateTime O_create { get; set; }
 

@@ -1,8 +1,8 @@
 ﻿using DataBase.Entities;
-using DrinkFood_API.Exceptions;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
+using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Services
 {
@@ -10,30 +10,56 @@ namespace DrinkFood_API.Services
     {
         [Inject] private readonly AccountRepository _accountRepository;
 
+        [Inject] private readonly CodeTableRepository _codeTableRepository;
+
         public AccountService(IServiceProvider provider)  : base()
         {
             provider.Inject(this);
         }
 
-        public ResponseLoginModel? Login(RequestLoginModel Request)
+        public List<ViewAccount> GetAccountList()
         {
-            _ = _accountRepository.Exist(Request.Number, Request.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
-            return new ResponseLoginModel() { Token = "" };
+            return _accountRepository.GetAccountList();
         }
 
-        public ResponseProfileModel? GetProfile(Guid AccountID)
+
+        public ResponseProfileDialogOptions GetProfileDialogOptions()
         {
-            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
-            return new ResponseProfileModel(account);
+            return new ResponseProfileDialogOptions
+            {
+                LunchPayment = _codeTableRepository.FindAll(x => x.CT_type == "LunchPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+                DrinkPayment = _codeTableRepository.FindAll(x => x.CT_type == "DrinkPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+            };
         }
 
-        public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel Request)
+        public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
         {
             _accountRepository.UpdateProfile(new UpdateProfileModel
             {
                 AccountID = AccountID,
-                AccountName = Request.Name,
-                AccountBrief = Request.Brief,
+                Brief = RequestData.Brief,
+                LunchDefaultPayment = RequestData.LunchDefaultPayment,
+                DrinkDefaultPayment = RequestData.DrinkDefaultPayment,
+                LunchNotify = RequestData.LunchNotify,
+                DrinkNotify = RequestData.DrinkNotify,
+                CloseNotify = RequestData.CloseNotify,
+            });
+        }
+
+
+        public void CreateAccount(RequestCreateAccountModel RequestData)
+        {
+            _accountRepository.Create(new Account
+            {
+                A_name = RequestData.Name,
+                A_brief = RequestData.Brief,
+                A_email = RequestData.Email,
+                A_password = RequestData.Email,
+                A_lunch_notify = RequestData.LunchNotify,
+                A_drink_notify = RequestData.DrinkNotify,
+                A_close_notify = RequestData.CloseNotify,
+                A_default_lunch_payment = RequestData.LunchDefaultPayment,
+                A_default_drink_payment = RequestData.DrinkDefaultPayment,
             });
         }
     }

@@ -16,8 +16,6 @@ namespace DataBase
 
         public virtual DbSet<Brand> Brand { get; set; }
 
-        public virtual DbSet<BrandLink> BrandLink { get; set; }
-
         public virtual DbSet<CodeTable> CodeTable { get; set; }
 
         public virtual DbSet<Company> Company { get; set; }

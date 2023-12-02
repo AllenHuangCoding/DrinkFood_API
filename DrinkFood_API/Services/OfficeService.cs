@@ -15,7 +15,7 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        public List<ResponseOfficeListModel> GetOfficeList(RequestOfficeListModel Request)
+        public List<ResponseOfficeListModel> GetOfficeList(RequestOfficeListModel RequestData)
         {
             return _officeRepository.GetOfficeList();
         }
@@ -25,14 +25,14 @@ namespace DrinkFood_API.Services
             return _officeMemberRepository.GetOfficeMemberList(OfficeID);
         }
 
-        public void PostOfficeMember(Guid OfficeID, RequestPostOfficeMemberModel Request)
+        public void PostOfficeMember(Guid OfficeID, RequestPostOfficeMemberModel RequestData)
         {
-            _officeMemberRepository.PostOfficeMember(OfficeID, Request.AccountIDs);
+            _officeMemberRepository.PostOfficeMember(OfficeID, RequestData.AccountIDs);
         }
 
-        public void DeleteOfficeMember(RequestDeleteOfficeMemberModel Request)
+        public void DeleteOfficeMember(RequestDeleteOfficeMemberModel RequestData)
         {
-            _officeMemberRepository.DeleteOfficeMember(Request.OfficeMemberIDs);
+            _officeMemberRepository.DeleteOfficeMember(RequestData.OfficeMemberIDs);
         }
     }
 }

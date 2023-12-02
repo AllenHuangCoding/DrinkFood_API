@@ -8,24 +8,35 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StoreController : BaseController
+    public class StoreController : CheckTokenController
     {
         [Inject] private readonly StoreService _storeService;
 
-        public StoreController(IServiceProvider provider) : base()
+        public StoreController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }
 
         /// <summary>
+        /// 店家詳細資料
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseStoreListModel), StatusCodes.Status200OK)]
+        [HttpGet("GetStore/{StoreID}")]
+        public IActionResult GetStore(Guid StoreID)
+        {
+            ResponseStoreListModel Response = _storeService.GetStore(StoreID);
+            return Json(new ResponseData<ResponseStoreListModel>(Response, 1));
+        }
+
+        /// <summary>
         /// 店家清單
         /// </summary>
-        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ResponseStoreListModel>), StatusCodes.Status200OK)]
         [HttpGet("GetStoreList")]
-        public IActionResult GetStoreList([FromQuery] RequestStoreListModel Request)
+        public IActionResult GetStoreList([FromQuery] RequestStoreListModel RequestData)
         {
-            var Response = _storeService.GetStoreList(Request);
-            return Json(new ResponseData<object?>(Response, Response.Count));
+            List<ResponseStoreListModel> Response = _storeService.GetStoreList(RequestData);
+            return Json(new ResponseData<List<ResponseStoreListModel>>(Response, Response.Count));
         }
     }
 }

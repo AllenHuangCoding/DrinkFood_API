@@ -7,11 +7,11 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OfficeController : BaseController
+    public class OfficeController : CheckTokenController
     {
         [Inject] private readonly OfficeService _officeService;
 
-        public OfficeController(IServiceProvider provider) : base()
+        public OfficeController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }
@@ -21,9 +21,9 @@ namespace DrinkFood_API.Controllers
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpGet("GetOfficeList")]
-        public IActionResult GetOfficeList([FromQuery] RequestOfficeListModel Request)
+        public IActionResult GetOfficeList([FromQuery] RequestOfficeListModel RequestData)
         {
-            var Response = _officeService.GetOfficeList(Request);
+            var Response = _officeService.GetOfficeList(RequestData);
             return Json(new ResponseData<object?>(Response, Response.Count));
         }
 
@@ -44,9 +44,9 @@ namespace DrinkFood_API.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPost("PostOfficeMember/{OfficeID}")]
-        public IActionResult PostOfficeMember(Guid OfficeID, [FromForm] RequestPostOfficeMemberModel Request)
+        public IActionResult PostOfficeMember(Guid OfficeID, [FromForm] RequestPostOfficeMemberModel RequestData)
         {
-            _officeService.PostOfficeMember(OfficeID, Request);
+            _officeService.PostOfficeMember(OfficeID, RequestData);
             return Json(new ResponseData<object?>(null, 0));
         }
 
@@ -58,9 +58,9 @@ namespace DrinkFood_API.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpDelete("DeleteOfficeMember")]
-        public IActionResult DeleteOfficeMember([FromForm] RequestDeleteOfficeMemberModel Request)
+        public IActionResult DeleteOfficeMember([FromForm] RequestDeleteOfficeMemberModel RequestData)
         {
-            _officeService.DeleteOfficeMember(Request);
+            _officeService.DeleteOfficeMember(RequestData);
             return Json(new ResponseData<object?>(null, 0));
         }
     }
