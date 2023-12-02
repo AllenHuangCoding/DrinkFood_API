@@ -1,4 +1,5 @@
 ﻿using CodeShare.Libs.BaseProject;
+using DataBase.Entities;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 
@@ -8,7 +9,7 @@ namespace DrinkFood_API.Services
     {
         [Inject] private readonly AccountRepository _accountRepository;
 
-        [Inject] private readonly AuthService _authService;
+        [Inject] private readonly AccountLoginRepository _accountLoginRepository;
 
         private readonly TokenManager _tokenManager;
 
@@ -18,41 +19,33 @@ namespace DrinkFood_API.Services
             _tokenManager = new TokenManager(provider);
         }
 
-        public ResponseLoginModel Login(RequestLoginModel RequestData)
+        public ResponseLoginModel? Login(RequestLoginModel RequestData)
         {
-            var user = _accountRepository.Exist(RequestData.Email, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
-            _tokenManager.Create(user.A_id, (token) =>
-            {
-                //Account account = _context.Account.Where(x => x.A_id == accountID).First();
-                //ResponseLoginModel ResponseModel = new ResponseLoginModel
-                //{
-                //    Token = string.Format("Bearer {0}", Token),
-                //    AccountId = account.A_id,
-                //    AccountName = account.A_name,
-                //    AccountNumber = account.A_number,
-                //    IsAdmin = account.A_isAdmin,
-                //    NeedChange = account.A_change_password
-                //};
-                //account.A_update = TokenCreateDate;
+            ResponseLoginModel? response = null;
 
-                //_context.AccountLogin.Add(new AccountLogin()
-                //{
-                //    AL_account_id = accountID,
-                //    AL_token = ResponseModel.Token,
-                //    AL_validity = TokenCreateDate.AddHours(2),
-                //    AL_ip = ip,
-                //    AL_device = "Web"
-                //});
-                //_context.SaveChanges();
+            var account = _accountRepository.Exist(RequestData.Email, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
+            
+            _tokenManager.Create(account.A_id, (token) =>
+            {
+                _accountLoginRepository.PatchDelete(account.A_id);
+
+                _accountLoginRepository.Create(new AccountLogin()
+                {
+                    AL_account_id = account.A_id,
+                    AL_token = token,
+                });
+
+                response = new()
+                {
+                    AccountID = account.A_id,
+                    Token = $"Bearer {token}",
+                    Name = account.A_name,
+                    Brief = account.A_brief,
+                    IsAdmin = account.A_is_admin
+                };
             });
 
-            return new ResponseLoginModel()
-            {
-                Token = "",
-                AccountID = user.A_id,
-                Name = user.A_name,
-                Brief = user.A_brief
-            };
+            return response;
         }
     }
 }

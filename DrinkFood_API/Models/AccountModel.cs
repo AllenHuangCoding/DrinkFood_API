@@ -34,6 +34,8 @@ namespace DrinkFood_API.Models
         public string Name { get; set; } = null!;
 
         public string? Brief { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 
     public class ViewAccount

@@ -21,6 +21,11 @@ namespace CodeShare.Libs.BaseProject
         { 
             provider.Inject(this);
 
+            if (_configuration!.GetSection("Token")["Key"] == null)
+            {
+                throw new ArgumentException("appsettings Token Key");
+            }
+
             _key = _configuration!.GetSection("Token")["Key"]!.ToString();
         }
 
@@ -105,70 +110,6 @@ namespace CodeShare.Libs.BaseProject
 
             //驗證時效性
 
-            /*
-            AccountLogin LoginRecord = _context.AccountLogin.Where(a =>
-                a.AL_token == string.Format("Bearer {0}", token) &&
-                a.AL_normal == tokenIsNormal
-            ).FirstOrDefault();
-
-            if (LoginRecord != null)
-            {
-                // 如果已經超過時限，則回傳過期
-                if (LoginRecord.AL_validity < DateTime.Now)
-                {
-                    SimpleResult = new SimpleResult()
-                    {
-                        Success = false,
-                        Message = "連線已逾時，請重新登入"
-                    };
-                    return false;
-                }
-                else
-                {
-                    if (tokenIsNormal)
-                    {
-                        List<AccountLogin> LoginRecords = _context.AccountLogin.Where(a => a.AL_validity >= DateTime.Now).ToList();
-
-                        //因為登入時候會自動創建相同create時間的不同系統多個token
-                        //故將token依照時間做分群後取得現在群裡面有原先token的組別再一口氣加2小時的驗證時間
-                        LoginRecords = LoginRecords.GroupBy(x => x.AL_create).Where(x => x.Select(x => x.AL_id).Contains(LoginRecord.AL_id)).FirstOrDefault().Select(x => { return x; }).ToList();
-                        LoginRecords = LoginRecords.Select(x =>
-                        {
-                            x.AL_validity = DateTime.Now;
-                            x.AL_validity = LoginRecord.AL_validity.AddHours(2);
-                            x.AL_update = DateTime.Now;
-                            return x;
-                        }).ToList();
-
-                        LoginRecordList = LoginRecords;
-                        ProductID = LoginRecord.AL_product_id;
-                    }
-                    else
-                    {
-                        // 忘記密碼Token呼叫API: 已驗證成功，砍掉30分鐘的暫時性Token
-                        _context.AccountLogin.Remove(LoginRecord);
-                        _context.SaveChanges();
-                    }
-                }
-                IsAdmin = _context.NewAccount.Where(x => x.A_id == UserId).Select(x => x.A_isAdmin).FirstOrDefault();
-                IsSystem = _context.NewAccount.Where(x => x.A_id == UserId).Select(x => x.A_type == "System").FirstOrDefault();
-
-                SimpleResult = new SimpleResult()
-                {
-                    Success = true
-                };
-                return true;
-            }
-            else
-            {
-                SimpleResult = new SimpleResult()
-                {
-                    Success = false,
-                    Message = "Token驗證失敗"
-                };
-                return false;
-            }
-            */
             return true;
         }
 

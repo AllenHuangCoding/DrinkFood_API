@@ -18,4 +18,10 @@ public partial class AccountLogin
     public DateTime AL_create { get; set; }
 
     public DateTime AL_update { get; set; }
+
+    public AccountLogin() 
+    { 
+        AL_create = DateTime.Now;
+        AL_update = DateTime.Now;
+    }
 }

@@ -24,9 +24,8 @@ namespace DrinkFood_API.Controllers
         [HttpPost("Login")]
         public IActionResult Login([FromBody] RequestLoginModel RequestData)
         {
-            ResponseLoginModel Response = _loginService.Login(RequestData);
-            return Json(new ResponseData<ResponseLoginModel>(Response, 1));
+            ResponseLoginModel? Response = _loginService.Login(RequestData);
+            return Json(new ResponseData<ResponseLoginModel?>(Response, 1));
         }
-
     }
 }
