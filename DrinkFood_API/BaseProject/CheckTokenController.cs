@@ -1,25 +1,24 @@
-﻿using DrinkFood_API.Exceptions;
-using DrinkFood_API.Services;
-using System.Web;
+﻿using System.Web;
 
-namespace DrinkFood_API.Controllers
+namespace CodeShare.Libs.BaseProject
 {
     public class CheckTokenController : BaseController
     {
-        [Inject] protected AuthService _authService;
+        private readonly TokenManager _tokenManager;
 
         /// <summary>
         /// 需登入的API呼叫使用
         /// </summary>
         public CheckTokenController(IServiceProvider provider) : base(provider)
         {
+            _tokenManager = new TokenManager(provider);
             SetLoginInfo();
         }
 
         /// <summary>
         /// 設定登入資訊
         /// </summary>
-        protected void SetLoginInfo()
+        private void SetLoginInfo()
         {
             // 取出網址參數
             var parameters = _httpContextAccessor.HttpContext.Request.Query;
@@ -29,11 +28,11 @@ namespace DrinkFood_API.Controllers
             if (parameters.ContainsKey("Token"))
             {
                 // GET 網址參數傳入的字串需要解碼
-                TokenSuccess = _authService.CheckToken(HttpUtility.UrlDecode(parameters["Token"].ToString()));
+                TokenSuccess = _tokenManager.Check(HttpUtility.UrlDecode(parameters["Token"].ToString()));
             }
             else
             {
-                TokenSuccess = _authService.CheckToken(_httpContextAccessor.HttpContext.Request);
+                TokenSuccess = _tokenManager.Check(_httpContextAccessor.HttpContext.Request);
             }
             if (!TokenSuccess)
             {

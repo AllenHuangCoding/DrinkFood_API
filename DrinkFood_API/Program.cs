@@ -1,7 +1,6 @@
 using CodeShare.Libs.GenericEntityFramework;
 using DataBase;
-using DrinkFood_API.Filters;
-using DrinkFood_API.Middlewares;
+using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +55,8 @@ builder.Services.AddScopedByClassName("BaseView");
 builder.Services.AddScopedByClassName("BaseService");
 
 builder.Services.AddScoped<IDmlLogService, LogService>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IApiLogService, ApiLogService>();
+builder.Services.AddHttpContextAccessor();
 
 #endregion 
 

@@ -1,7 +1,6 @@
-﻿using DrinkFood_API.Service;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace DrinkFood_API.Controllers
+namespace CodeShare.Libs.BaseProject
 {
     public class BaseController : Controller
     {
@@ -10,14 +9,6 @@ namespace DrinkFood_API.Controllers
         public BaseController(IServiceProvider provider)
         {
             provider.Inject(this);
-        }
-
-        /// <summary>
-        /// 設定此 api 需要紀錄log
-        /// </summary>
-        protected void SetApiLogNeedRecord(bool needRecord = true)
-        {
-            SetHttpContextItem(ApiLogService.NeedRecord, needRecord);
         }
 
         /// <summary>

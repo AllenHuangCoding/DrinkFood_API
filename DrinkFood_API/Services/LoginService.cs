@@ -1,7 +1,6 @@
-﻿using DrinkFood_API.Exceptions;
+﻿using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
 
 namespace DrinkFood_API.Services
 {
@@ -11,15 +10,18 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly AuthService _authService;
 
-        public LoginService(IServiceProvider provider) : base()
+        private readonly TokenManager _tokenManager;
+
+        public LoginService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
+            _tokenManager = new TokenManager(provider);
         }
 
         public ResponseLoginModel Login(RequestLoginModel RequestData)
         {
             var user = _accountRepository.Exist(RequestData.Email, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
-            _authService.CreateToken(user.A_id, (token) =>
+            _tokenManager.Create(user.A_id, (token) =>
             {
                 //Account account = _context.Account.Where(x => x.A_id == accountID).First();
                 //ResponseLoginModel ResponseModel = new ResponseLoginModel

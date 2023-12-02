@@ -1,8 +1,7 @@
-﻿using DrinkFood_API.Service;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using System.Text;
 
-namespace DrinkFood_API.Middlewares
+namespace CodeShare.Libs.BaseProject
 {
     public class BaseMiddleware
     {
@@ -33,7 +32,7 @@ namespace DrinkFood_API.Middlewares
                     {
                         string body = bodyReader.ReadToEndAsync().GetAwaiter().GetResult();
 
-                        httpContext.Items.Add(ApiLogService.Body, body);
+                        httpContext.Items.Add(IApiLogService.Body, body);
                     }
 
                     // 將 HTTP Request 的 Stream 起始位置歸零

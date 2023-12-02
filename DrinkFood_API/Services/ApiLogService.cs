@@ -1,12 +1,11 @@
-﻿using DataBase;
+﻿using CodeShare.Libs.BaseProject;
 using DataBase.Entities;
-using DrinkFood_API.Model;
 
 namespace DrinkFood_API.Service
 {
-    public class ApiLogService : BaseService
+    public class ApiLogService : BaseService, IApiLogService
     {
-        public ApiLogService() : base()
+        public ApiLogService(IServiceProvider provider) : base(provider)
         {
         }
 
@@ -42,7 +41,7 @@ namespace DrinkFood_API.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public ApiLog AddApiLog(ApiLogModel model)
+        public void AddApiLog(ApiLogModel model)
         {
             ApiLog newItem = new ApiLog()
             {
@@ -62,8 +61,6 @@ namespace DrinkFood_API.Service
             };
             //_dbContext.ApiLog.Add(newItem);
             //_dbContext.SaveChanges();
-
-            return newItem;
         }
 
         #endregion

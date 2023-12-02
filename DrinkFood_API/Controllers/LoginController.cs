@@ -1,7 +1,6 @@
-﻿using DrinkFood_API.Model;
+﻿using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DrinkFood_API.Controllers
@@ -15,6 +14,7 @@ namespace DrinkFood_API.Controllers
         public LoginController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
+            SetHttpContextItem(IApiLogService.Module, "Login");
         }
 
         /// <summary>

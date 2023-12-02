@@ -1,7 +1,6 @@
-﻿using DrinkFood_API.Exceptions;
+﻿using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
 
 namespace DrinkFood_API.Services
 {
@@ -11,7 +10,7 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly StoreRepository _storeRepository;
 
-        public MenuService(IServiceProvider provider) : base()
+        public MenuService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

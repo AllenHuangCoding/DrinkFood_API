@@ -1,6 +1,6 @@
-﻿using DrinkFood_API.Models;
+﻿using CodeShare.Libs.BaseProject;
+using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
 
 namespace DrinkFood_API.Services
 {
@@ -8,7 +8,7 @@ namespace DrinkFood_API.Services
     {
         [Inject] private readonly DrinkFoodRepository _drinkFoodRepository;
 
-        public DrinkFoodService(IServiceProvider provider) : base()
+        public DrinkFoodService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

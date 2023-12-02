@@ -1,9 +1,7 @@
-﻿using DrinkFood_API.Exceptions;
-using DrinkFood_API.Model;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace DrinkFood_API.Filters
+namespace CodeShare.Libs.BaseProject
 {
     /// <summary>
     /// 例外處理

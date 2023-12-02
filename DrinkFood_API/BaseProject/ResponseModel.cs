@@ -1,4 +1,4 @@
-﻿namespace DrinkFood_API.Model
+﻿namespace CodeShare.Libs.BaseProject
 {
     #region 單筆回傳
     public class ResponseModel
@@ -34,13 +34,6 @@
             Success = success;
             Code = code;
             Message = message;
-        }
-
-        public ResponseModel(SimpleResult simpleResult)
-        {
-            Success = simpleResult.Success;
-            Code = simpleResult.Code;
-            Message = simpleResult.ShowMessage ?? simpleResult.Message;
         }
     }
     #endregion
@@ -79,7 +72,7 @@
         public ResponseData(T data, int count)
         {
             Data = data;
-            Count = (data == null) ? 0 : count;
+            Count = data == null ? 0 : count;
         }
 
         /// <summary>
@@ -117,7 +110,7 @@
         public ResponseData(T data, int count, string message)
         {
             Data = data;
-            Count = (data == null) ? 0 : count;
+            Count = data == null ? 0 : count;
             Message = message;
         }
 
@@ -132,7 +125,7 @@
         {
             Success = success;
             Data = data;
-            Count = (data == null) ? 0 : count;
+            Count = data == null ? 0 : count;
             Message = message;
         }
 
@@ -148,29 +141,11 @@
         {
             Success = success;
             Data = data;
-            Count = (data == null) ? 0 : count;
+            Count = data == null ? 0 : count;
             Message = message;
             Code = code;
         }
-
-        public ResponseData(SimpleResult simpleResult, T data, int count) : base(simpleResult)
-        {
-            Data = data;
-            Count = (data == null) ? 0 : count;
-        }
     }
     #endregion
 
-    #region 簡易暫存回傳訊息
-    public class SimpleResult
-    {
-        public bool Success { get; set; } = true;
-        public int Code { get; set; } = 200;
-        public int Count { get; set; }
-        public string Message { get; set; } = "執行成功";
-        public object Data { get; set; } 
-        public string ShowMessage { get; set; }
-        public Exception Exception { get; set; }
-    }
-    #endregion
 }

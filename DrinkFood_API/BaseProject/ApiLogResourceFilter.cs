@@ -1,20 +1,18 @@
-﻿using DrinkFood_API.Model;
-using DrinkFood_API.Service;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace DrinkFood_API.Filters
+namespace CodeShare.Libs.BaseProject
 {
     /// <summary>
     /// Api Log 紀錄處理
     /// </summary>
     public class ApiLogResourceFilter : IResourceFilter
     {
-        private readonly ApiLogService _apiLogService;
+        [Inject] private readonly IApiLogService _apiLogService;
 
-        public ApiLogResourceFilter(ApiLogService apiLogService)
+        public ApiLogResourceFilter(IServiceProvider provider)
         {
-            _apiLogService = apiLogService;
+            provider.Inject(this);
         }
 
         /// <summary>
@@ -28,8 +26,7 @@ namespace DrinkFood_API.Filters
 
             // GET 行為不記錄 && 有設定模組的流程才紀錄
             if (context.Result != null &&
-                context.HttpContext.Request.Method != HttpMethods.Get &&
-                context.HttpContext.Items.ContainsKey(ApiLogService.Module))
+                context.HttpContext.Items.ContainsKey(IApiLogService.Module))
             {
                 model = InsertLog(context);
             }
@@ -65,20 +62,20 @@ namespace DrinkFood_API.Filters
                 {
                     needRecord = true;
                 }
-                else if (context.HttpContext.Items.ContainsKey(ApiLogService.NeedRecord))
+                else if (context.HttpContext.Items.ContainsKey(IApiLogService.NeedRecord))
                 {
                     // 特殊行為透過此欄位卡控是否紀錄
-                    needRecord = (bool)context.HttpContext.Items[ApiLogService.NeedRecord];
+                    needRecord = (bool)context.HttpContext.Items[IApiLogService.NeedRecord];
                 }
 
                 if (needRecord)
                 {
                     var response = (ResponseModel)result.Value;
 
-                    string body = context.HttpContext.Items.ContainsKey(ApiLogService.Body) ?
-                            context.HttpContext.Items[ApiLogService.Body].ToString() : null;
+                    string body = context.HttpContext.Items.ContainsKey(IApiLogService.Body) ?
+                            context.HttpContext.Items[IApiLogService.Body].ToString() : null;
 
-                    string accountId = context.HttpContext.Items.Where(p => p.Key.ToString() == ApiLogService.AccountId).Select(p => p.Value.ToString()).FirstOrDefault();
+                    string accountId = context.HttpContext.Items.Where(p => p.Key.ToString() == IApiLogService.AccountId).Select(p => p.Value.ToString()).FirstOrDefault();
 
                     model = new ApiLogModel()
                     {
@@ -88,7 +85,7 @@ namespace DrinkFood_API.Filters
                         StatusCode = response.Code,
                         Success = response.Success,
                         Message = response.Message,
-                        Module = context.HttpContext.Items[ApiLogService.Module].ToString(),
+                        Module = context.HttpContext.Items[IApiLogService.Module].ToString(),
                         Body = body,
                         IpAddress = context.HttpContext.Connection.RemoteIpAddress.ToString(),
                         Os = os,
@@ -102,8 +99,8 @@ namespace DrinkFood_API.Filters
                 // 匯出檔案動作也需要紀錄
                 FileContentResult result = (FileContentResult)context.Result;
 
-                string body = context.HttpContext.Items.ContainsKey(ApiLogService.Body) ?
-                        context.HttpContext.Items[ApiLogService.Body].ToString() : null;
+                string body = context.HttpContext.Items.ContainsKey(IApiLogService.Body) ?
+                        context.HttpContext.Items[IApiLogService.Body].ToString() : null;
 
                 model = new ApiLogModel()
                 {
@@ -113,7 +110,7 @@ namespace DrinkFood_API.Filters
                     StatusCode = context.HttpContext.Response.StatusCode,
                     Success = true,
                     Message = result.FileDownloadName,
-                    Module = context.HttpContext.Items[ApiLogService.Module].ToString(),
+                    Module = context.HttpContext.Items[IApiLogService.Module].ToString(),
                     Body = body,
                     IpAddress = context.HttpContext.Connection.RemoteIpAddress.ToString(),
                     Os = os,

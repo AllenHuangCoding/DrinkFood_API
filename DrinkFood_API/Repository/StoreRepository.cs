@@ -1,7 +1,7 @@
 ﻿using CodeShare.Libs.GenericEntityFramework;
 using DataBase;
 using DataBase.Entities;
-using DrinkFood_API.Exceptions;
+using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 
 namespace DrinkFood_API.Repository

@@ -1,4 +1,4 @@
-﻿namespace DrinkFood_API.Utility
+﻿namespace CodeShare.Libs.BaseProject
 {
     /// <summary>
     /// Token

@@ -2,7 +2,7 @@
 using DataBase.Entities;
 using DataBase;
 using DrinkFood_API.Models;
-using DrinkFood_API.Exceptions;
+using CodeShare.Libs.BaseProject;
 
 namespace DrinkFood_API.Repository
 {

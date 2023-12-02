@@ -1,8 +1,8 @@
 ﻿using DrinkFood_API.Models;
-using DrinkFood_API.Service;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
 using DataBase.Entities;
+using CodeShare.Libs.BaseProject;
 
 namespace DrinkFood_API.Services
 {
@@ -22,7 +22,7 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
-        public ImportService(IServiceProvider provider) : base()
+        public ImportService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

@@ -1,5 +1,5 @@
-﻿using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
+﻿using CodeShare.Libs.BaseProject;
+using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Services
@@ -9,7 +9,7 @@ namespace DrinkFood_API.Services
         [Inject] private readonly StoreRepository _storeRepository;
         [Inject] private readonly BrandRepository _brandRepository;
 
-        public BrandService(IServiceProvider provider) : base()
+        public BrandService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

@@ -1,4 +1,4 @@
-﻿namespace DrinkFood_API.Exceptions
+﻿namespace CodeShare.Libs.BaseProject
 {
     /// <summary>
     /// Api 錯誤回傳的例外處理
@@ -6,11 +6,7 @@
     [Serializable]
     public class ApiException : Exception
     {
-        public int ErrorCode { get; set; } = 200;
-
-        public ApiException()
-        {
-        }
+        public int ErrorCode { get; set; }
 
         public ApiException(string message, int errorCode = 200) : base(message)
         {

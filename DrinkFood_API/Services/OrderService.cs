@@ -1,9 +1,8 @@
 ﻿using Aspose.Cells;
 using DataBase.Entities;
-using DrinkFood_API.Exceptions;
+using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
 using DrinkFood_API.Utility;
 
 namespace DrinkFood_API.Services
@@ -20,7 +19,7 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly StoreRepository _storeRepository;
 
-        public OrderService(IServiceProvider provider) : base()
+        public OrderService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

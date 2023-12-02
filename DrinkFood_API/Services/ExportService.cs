@@ -1,8 +1,7 @@
 ﻿using CodeShare.Libs.Excel;
+using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
-using DrinkFood_API.Service;
-using DrinkFood_API.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DrinkFood_API.Services
@@ -13,7 +12,7 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly OrderRepository _orderRepository;
 
-        public ExportService(IServiceProvider provider) : base()
+        public ExportService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }
