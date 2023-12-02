@@ -6,11 +6,11 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImportController : BaseController
+    public class ImportController : CheckTokenController
     {
         [Inject] private readonly ImportService _importService;
 
-        public ImportController(IServiceProvider provider) : base()
+        public ImportController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

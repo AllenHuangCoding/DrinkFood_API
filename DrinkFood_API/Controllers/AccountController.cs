@@ -7,24 +7,13 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : BaseController
+    public class AccountController : CheckTokenController
     {
         [Inject] private readonly AccountService _accountService;
 
-        public AccountController(IServiceProvider provider) : base()
+        public AccountController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
-        }
-
-        /// <summary>
-        /// 登入
-        /// </summary>
-        [ProducesResponseType(typeof(ResponseLoginModel), StatusCodes.Status200OK)]
-        [HttpPost("Login")]
-        public IActionResult Login([FromBody] RequestLoginModel RequestData)
-        {
-            ResponseLoginModel Response = _accountService.Login(RequestData);
-            return Json(new ResponseData<ResponseLoginModel>(Response, _accountService.SimpleResult.Count));
         }
 
         /// <summary>

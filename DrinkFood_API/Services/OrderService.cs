@@ -37,7 +37,7 @@ namespace DrinkFood_API.Services
         public List<OrderListModel> GetOrderList()
         {
             // 開團清單 = 公團 + 私團
-            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x)).ToList();
+            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x, Guid.NewGuid())).ToList();
         }
 
         public ViewOrderAndDetail GetOrder(Guid OrderID)

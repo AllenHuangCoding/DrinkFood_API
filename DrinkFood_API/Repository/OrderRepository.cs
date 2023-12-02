@@ -52,6 +52,15 @@ namespace DrinkFood_API.Repository
             }
         }
 
+        public bool IsOwnerOrder(ViewOrder Entity, Guid AccountID)
+        {
+            if (Entity.OwnerID == AccountID)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public IQueryable<ViewOrder> GetViewOrder()
         {
             return from order in _readDBContext.Order

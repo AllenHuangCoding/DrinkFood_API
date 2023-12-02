@@ -135,7 +135,7 @@ namespace DrinkFood_API.Models
 
         public bool DelayClose { get; set; } = false;
 
-        public OrderListModel(ViewOrder Entity)
+        public OrderListModel(ViewOrder Entity, Guid AccountID)
         {
             #region 原始欄位
 
@@ -191,13 +191,15 @@ namespace DrinkFood_API.Models
 
             #region 狀態控制欄位
 
-            bool IsOwner = true;
-            if (OrderStatus != "98" && IsOwner)
+            if (OrderStatus != "98")
             {
+                if (Entity.OwnerID == AccountID)
+                {
+                    CanClose = true;
+                    DelayArrival = true;
+                    DelayClose = true;
+                }
                 CanAdd = true;
-                CanClose = true;
-                DelayArrival = true;
-                DelayClose = true;
             }
 
             #endregion
@@ -290,7 +292,7 @@ namespace DrinkFood_API.Models
 
         public ViewDetailHistory(ViewOrderDetail OrderDetail, ViewOrder Order)
         {
-            OrderListModel listModel = new(Order);
+            OrderListModel listModel = new(Order, Guid.NewGuid());
 
             OrderDetailID = OrderDetail.OrderDetailID;
             ArrivalTime = listModel.ArrivalTime;
@@ -355,7 +357,7 @@ namespace DrinkFood_API.Models
     {
         public List<GroupOrderDetailModel> Detail { get; set; }
 
-        public ViewOrderAndDetail(ViewOrder Entity, List<GroupOrderDetailModel> EntityData) : base(Entity)
+        public ViewOrderAndDetail(ViewOrder Entity, List<GroupOrderDetailModel> EntityData) : base(Entity, Guid.NewGuid())
         {
             Detail = EntityData;
         }

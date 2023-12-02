@@ -1,6 +1,4 @@
 ﻿using DataBase.Entities;
-using DrinkFood_API.Exceptions;
-using DrinkFood_API.Model;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
@@ -17,18 +15,6 @@ namespace DrinkFood_API.Services
         public AccountService(IServiceProvider provider)  : base()
         {
             provider.Inject(this);
-        }
-
-        public ResponseLoginModel Login(RequestLoginModel RequestData)
-        {
-            var user = _accountRepository.Exist(RequestData.Email, RequestData.Password) ?? throw new ApiException("帳號或密碼輸入錯誤", 400);
-            
-            return new ResponseLoginModel() { 
-                Token = "", 
-                AccountID = user.A_id, 
-                Name = user.A_name, 
-                Brief = user.A_brief 
-            };
         }
 
         public List<ViewAccount> GetAccountList()

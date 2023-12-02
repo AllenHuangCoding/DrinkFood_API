@@ -6,11 +6,11 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BrandController : BaseController
+    public class BrandController : CheckTokenController
     {
         [Inject] private readonly BrandService _brandService;
 
-        public BrandController(IServiceProvider provider) : base()
+        public BrandController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

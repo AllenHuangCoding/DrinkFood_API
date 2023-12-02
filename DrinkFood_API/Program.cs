@@ -1,7 +1,8 @@
 using CodeShare.Libs.GenericEntityFramework;
 using DataBase;
+using DrinkFood_API.Filters;
+using DrinkFood_API.Middlewares;
 using DrinkFood_API.Service;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,19 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
     });
 });
+#endregion
+
+#region ¬ö¿ýlog¤ÎÅçÃÒ
+
+builder.Services.AddMvc(
+                config =>
+                {
+                    config.Filters.Add(typeof(HandleExceptionFilter));
+                    config.Filters.Add(typeof(ApiLogResourceFilter));
+                }
+            //setting  System.Text.Json response to PascalCase
+            ).AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
 #endregion
 
 // Add services to the container.
@@ -40,9 +54,9 @@ builder.Services.AddScoped<DBContextFactory<EFContext>>();
 builder.Services.AddScopedByClassName("BaseTable");
 builder.Services.AddScopedByClassName("BaseView");
 builder.Services.AddScopedByClassName("BaseService");
-builder.Services.AddScopedByClassName("BaseController");
 
 builder.Services.AddScoped<IDmlLogService, LogService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 #endregion 
 
@@ -70,5 +84,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("AllowOrigin");
+
+app.UseBaseMiddleware();
 
 app.Run();

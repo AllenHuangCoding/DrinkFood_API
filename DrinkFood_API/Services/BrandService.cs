@@ -1,5 +1,4 @@
-﻿using DrinkFood_API.Models;
-using DrinkFood_API.Repository;
+﻿using DrinkFood_API.Repository;
 using DrinkFood_API.Service;
 using DrinkFood_API.Utility;
 

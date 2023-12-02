@@ -7,11 +7,11 @@ namespace DrinkFood_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MenuController : BaseController
+    public class MenuController : CheckTokenController
     {
         [Inject] private readonly MenuService _menuService;
 
-        public MenuController(IServiceProvider provider) : base()
+        public MenuController(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
         }

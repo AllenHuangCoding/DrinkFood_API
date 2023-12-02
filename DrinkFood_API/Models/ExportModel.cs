@@ -47,7 +47,7 @@ namespace DrinkFood_API.Models
 
         public DetailHistoryExcelModel(ViewOrderDetail OrderDetail, ViewOrder Order)
         {
-            OrderListModel listModel = new(Order);
+            OrderListModel listModel = new(Order, Guid.NewGuid());
             ArrivalTime = listModel.ArrivalTime;
             BrandName = Order.BrandName;
             StoreName = listModel.StoreName;
