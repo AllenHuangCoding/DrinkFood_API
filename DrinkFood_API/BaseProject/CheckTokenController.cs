@@ -6,11 +6,15 @@ namespace CodeShare.Libs.BaseProject
     {
         private readonly TokenManager _tokenManager;
 
+        [Inject] protected readonly ITokenLogic _userInfo;
+
         /// <summary>
         /// 需登入的API呼叫使用
         /// </summary>
         public CheckTokenController(IServiceProvider provider) : base(provider)
         {
+            provider.Inject(this);
+
             _tokenManager = new TokenManager(provider);
             SetLoginInfo();
         }
@@ -28,11 +32,11 @@ namespace CodeShare.Libs.BaseProject
             if (parameters.ContainsKey("Token"))
             {
                 // GET 網址參數傳入的字串需要解碼
-                TokenSuccess = _tokenManager.Check(HttpUtility.UrlDecode(parameters["Token"].ToString()));
+                TokenSuccess = _tokenManager.Check(HttpUtility.UrlDecode(parameters["Token"].ToString()), _userInfo.CheckTokenLogic);
             }
             else
             {
-                TokenSuccess = _tokenManager.Check(_httpContextAccessor.HttpContext.Request);
+                TokenSuccess = _tokenManager.Check(_httpContextAccessor.HttpContext.Request, _userInfo.CheckTokenLogic);
             }
             if (!TokenSuccess)
             {

@@ -11,12 +11,12 @@ namespace DrinkFood_API.Models
         /// <summary>
         /// 員工信箱
         /// </summary>
-        public required string Email { get; set; }
+        public string Email { get; set; }
         
         /// <summary>
         /// 密碼
         /// </summary>
-        public required string Password { get; set; }
+        public string Password { get; set; }
     }
 
     /// <summary>

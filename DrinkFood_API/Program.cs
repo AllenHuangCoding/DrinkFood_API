@@ -2,6 +2,8 @@ using CodeShare.Libs.GenericEntityFramework;
 using DataBase;
 using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Service;
+using DrinkFood_API.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,13 +51,17 @@ builder.Configuration.AddConfiguration(configRoot);
 // 服務與工廠
 builder.Services.AddScoped<DBContextFactory<EFContext>>();
 
+builder.Services.AddScoped<IDmlLogService, LogService>();
+builder.Services.AddScoped<IApiLogService, ApiLogService>();
+builder.Services.AddScoped<ITokenLogic, AuthService>();
+builder.Services.AddScoped<TokenManager>();
+
 // 自動注入繼承Base相關的類別
 builder.Services.AddScopedByClassName("BaseTable");
 builder.Services.AddScopedByClassName("BaseView");
 builder.Services.AddScopedByClassName("BaseService");
 
-builder.Services.AddScoped<IDmlLogService, LogService>();
-builder.Services.AddScoped<IApiLogService, ApiLogService>();
+
 builder.Services.AddHttpContextAccessor();
 
 #endregion 
@@ -66,7 +72,43 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "訂餐系統",
+        Version = "v1.0",
+        Description = "系統API規格說明"
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Bearer Token",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+
+            },
+            new List<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 

@@ -24,10 +24,9 @@ namespace DrinkFood_API.Repository
             }
         }
 
-        public bool Exist(string token)
+        public AccountLogin Exist(string token)
         {
-            _ = FindOne(x => x.AL_token == token) ?? throw new ApiException("Token驗證失敗", 401);
-            return true;
+            return FindOne(x => x.AL_token == token) ?? throw new ApiException("Token驗證失敗", 401);
         }
     }
 }

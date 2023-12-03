@@ -4,6 +4,57 @@ using System.Text;
 
 namespace CodeShare.Libs.BaseProject
 {
+    /// <summary>
+    /// 檢查Token資料庫邏輯的委派結果
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="payload"></param>
+    /// <returns></returns>
+    public delegate bool TokenLogicDelegate(string token, Payload payload);
+
+    /// <summary>
+    /// 檢查Token資料庫邏輯的Interface
+    /// </summary>
+    public interface ITokenLogic
+    {
+        /// <summary>
+        /// 使用者ID
+        /// </summary>
+        public Guid UserID { get; set; }
+
+        /// <summary>
+        /// 檢查Token資料庫邏輯
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        public bool CheckTokenLogic(string token, Payload payload);
+    }
+
+    /// <summary>
+    /// Token內藏的使用者資訊
+    /// </summary>
+    public class Payload
+    {
+        /// <summary>
+        /// 使用者ID
+        /// </summary>
+        public Guid UserID { get; set; }
+
+        /// <summary>
+        /// 創建時間
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+
+        public Payload()
+        {
+            CreateDate = DateTime.Now;
+        }
+    }
+
+    /// <summary>
+    /// Token管理
+    /// </summary>
     public class TokenManager
     {
         [Inject] private readonly IConfiguration _configuration;
@@ -14,7 +65,7 @@ namespace CodeShare.Libs.BaseProject
         private readonly string _key;
 
         /// <summary>
-        /// 
+        /// 建構元
         /// </summary>
         /// <param name="provider"></param>
         public TokenManager(IServiceProvider provider) 
@@ -33,63 +84,42 @@ namespace CodeShare.Libs.BaseProject
         /// 檢查Token是否正確 (Request版)
         /// </summary>
         /// <param name="request"></param>
-        /// <param name="tokenIsNormal"></param>
+        /// <param name="callback"></param>
         /// <returns></returns>
         /// <exception cref="ApiException"></exception>
-        public bool Check(HttpRequest request, bool tokenIsNormal = true)
+        public bool Check(HttpRequest request, TokenLogicDelegate callback)
         {
             // 從Request中取出欄位交給字串版Check判斷
             string HeaderToken = request.Headers["Authorization"].FirstOrDefault() ?? throw new ApiException("缺少Token", 401);
-            return Check(HeaderToken, tokenIsNormal);
+            return Check(HeaderToken, callback);
         }
 
         /// <summary>
         /// 檢查Token是否正確 (string版)
         /// </summary>
         /// <param name="token"></param>
-        /// <param name="tokenIsNormal"></param>
+        /// <param name="callback"></param>
         /// <returns></returns>
         /// <exception cref="ApiException"></exception>
-        public bool Check(string token, bool tokenIsNormal = true)
+        public bool Check(string token, TokenLogicDelegate callback)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
                 throw new ApiException("Token不可為空字串", 401);
             }
-            return CheckLogic(SplitSpaceToken(token), tokenIsNormal);
+            return Decode(token.Replace("Bearer ", "").Replace(" ", "+"), callback);
         }
 
-        #region CheckToken 邏輯
+        #region 私有方法：Decode
 
         /// <summary>
-        /// 解析Token中含有空白字元的情況
+        /// Token解析
         /// </summary>
-        /// <param name="Token"></param>
+        /// <param name="token"></param>
+        /// <param name="callback"></param>
         /// <returns></returns>
-        private static string SplitSpaceToken(string Token)
-        {
-            if (!string.IsNullOrWhiteSpace(Token))
-            {
-                var SplitToken = Token.Split("Bearer ").ToList();
-                if (SplitToken.Count >= 2)
-                {
-                    return SplitToken[1].Replace(" ", "+");
-                }
-                else
-                {
-                    return Token.Replace(" ", "+");
-                }
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// 檢查Token邏輯
-        /// </summary>
-        /// <param name="Token"></param>
-        /// <param name="tokenIsNormal"></param>
-        /// <returns></returns>
-        private bool CheckLogic(string token, bool tokenIsNormal)
+        /// <exception cref="ApiException"></exception>
+        private bool Decode(string token, TokenLogicDelegate callback)
         {
             string[] split = token.Split('.');
             string iv = split[0];
@@ -99,28 +129,29 @@ namespace CodeShare.Libs.BaseProject
             //檢查簽章是否正確
             if (signature != ComputeHMACSHA256(iv + "." + encrypt, _key.Substring(0, 64)))
             {
-                throw new ApiException("缺少Token", 401);
+                throw new ApiException("Token格式錯誤", 401);
             }
 
             //使用 AES 解密 Payload
             string base64 = AESDecrypt(encrypt, _key.Substring(0, 16), iv);
             string json = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
             Payload payload = JsonConvert.DeserializeObject<Payload>(json);
-
-
-            //驗證時效性
-
-            return true;
+            return callback.Invoke(token, payload);
         }
 
         #endregion
 
+        /// <summary>
+        /// 產生Token
+        /// </summary>
+        /// <param name="accountID"></param>
+        /// <param name="callback"></param>
         public void Create(Guid accountID, Action<string> callback)
         {
             DateTime TokenCreateDate = DateTime.Now;
             Payload payload = new()
             {
-                UserId = accountID,
+                UserID = accountID,
                 CreateDate = TokenCreateDate
             };
 
@@ -137,7 +168,7 @@ namespace CodeShare.Libs.BaseProject
             callback?.Invoke(iv + "." + encrypt + "." + signature);
         }
 
-        #region 私有方法：檢查設定檔key、加解密、產生雜湊
+        #region 私有方法：加解密、產生雜湊
 
         /// <summary>
         /// 產生 HMACSHA256 雜湊
@@ -145,7 +176,7 @@ namespace CodeShare.Libs.BaseProject
         /// <param name="data"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        private string ComputeHMACSHA256(string data, string key)
+        private static string ComputeHMACSHA256(string data, string key)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             using (HMACSHA256 hmacSHA = new HMACSHA256(keyBytes))
@@ -163,7 +194,7 @@ namespace CodeShare.Libs.BaseProject
         /// <param name="key"></param>
         /// <param name="iv"></param>
         /// <returns></returns>
-        private string AESEncrypt(string data, string key, string iv)
+        private static string AESEncrypt(string data, string key, string iv)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
@@ -187,7 +218,7 @@ namespace CodeShare.Libs.BaseProject
         /// <param name="key"></param>
         /// <param name="iv"></param>
         /// <returns></returns>
-        private string AESDecrypt(string data, string key, string iv)
+        private static string AESDecrypt(string data, string key, string iv)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
             byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
