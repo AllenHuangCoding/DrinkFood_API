@@ -24,13 +24,13 @@ namespace DrinkFood_API.Repository
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 
-            if (orderDetail.AccountID != AccountID)
+            if (orderDetail.DetailAccountID != AccountID)
             {
                 throw new ApiException("非點餐者權限", 400);
             }
         }
 
-        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data)
+        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data, Guid AccountID)
         {
             return Data.GroupBy(x => 
                 x.Name
@@ -38,17 +38,20 @@ namespace DrinkFood_API.Repository
                 new GroupOrderDetailModel
                 {
                     Name = x.Key,
-                    OrderDetailList = x.ToList()
+                    TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
+                    TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
+                    OrderDetailList = x.Select(y => new OrderDetailListModel(y, AccountID)).ToList(),
                 }
             ).ToList();
         }
 
-        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order)
+        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order, Guid AccountID)
         {
             return OrderDetail.Select(x => 
                 new ViewDetailHistory(
                     x,
-                    Order.First(o => o.OrderID == x.OrderID)
+                    Order.First(o => o.OrderID == x.OrderID),
+                    AccountID
                 )
             ).ToList();
         }
@@ -101,7 +104,7 @@ namespace DrinkFood_API.Repository
                    join sugarOption in _readDBContext.Option on orderDetail.OD_sugar_id equals sugarOption.O_id
                    join iceOption in _readDBContext.Option on orderDetail.OD_ice_id equals iceOption.O_id
                    join sizeOption in _readDBContext.Option on orderDetail.OD_size_id equals sizeOption.O_id
-                   join paymentCodeTable in _readDBContext.CodeTable.Where(x => x.CT_type == "Payment") on orderDetail.OD_payment_id equals paymentCodeTable.CT_id
+                   join paymentCodeTable in _readDBContext.CodeTable.Where(x => x.CT_type.Contains("Payment")) on orderDetail.OD_payment_id equals paymentCodeTable.CT_id
                    join office in _readDBContext.Office on order.O_office_id equals office.O_id
                    join store in _readDBContext.Store on order.O_store_id equals store.S_id
                    join brand in _readDBContext.Brand on store.S_brand_id equals brand.B_id
@@ -119,7 +122,7 @@ namespace DrinkFood_API.Repository
                        IceDesc = iceOption.O_name,
                        SizeID = orderDetail.OD_size_id,
                        SizeDesc = sizeOption.O_name,
-                       AccountID = orderDetail.OD_account_id,
+                       DetailAccountID = orderDetail.OD_account_id,
                        Name = account.A_name,
                        Brief = account.A_brief,
                        Email = account.A_email,

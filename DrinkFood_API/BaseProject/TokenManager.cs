@@ -23,6 +23,11 @@ namespace CodeShare.Libs.BaseProject
         public Guid UserID { get; set; }
 
         /// <summary>
+        /// 使用者ID
+        /// </summary>
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
         /// 檢查Token資料庫邏輯
         /// </summary>
         /// <param name="token"></param>

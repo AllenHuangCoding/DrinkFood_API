@@ -20,7 +20,7 @@ namespace DrinkFood_API.Services
         public FileResult ExportOrderDetailHistory(Guid AccountID)
         {
             var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.AccountID == AccountID
+                x.DetailAccountID == AccountID
             ).ToList();
 
             var orderIDs = orderDetail.Select(x => x.OrderID).ToList();

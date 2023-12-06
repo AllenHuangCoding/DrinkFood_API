@@ -19,6 +19,8 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly StoreRepository _storeRepository;
 
+        [Inject] private readonly AuthService _authService;
+
         public OrderService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
@@ -36,7 +38,7 @@ namespace DrinkFood_API.Services
         public List<OrderListModel> GetOrderList()
         {
             // 開團清單 = 公團 + 私團
-            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x, Guid.NewGuid())).ToList();
+            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x).SetButton(_authService.UserID)).ToList();
         }
 
         public ViewOrderAndDetail GetOrder(Guid OrderID)
@@ -45,7 +47,7 @@ namespace DrinkFood_API.Services
 
             var groupOrderDetail = GetOrderDetailList(OrderID);
 
-            return new ViewOrderAndDetail(order, groupOrderDetail);
+            return new ViewOrderAndDetail(order, groupOrderDetail, _authService.UserID);
         }
 
         public ResponseOrderDialogOptions GetCreateOrderDialogOptions(Guid? TypeID)
@@ -129,14 +131,14 @@ namespace DrinkFood_API.Services
         public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
             var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.AccountID == AccountID
+                x.DetailAccountID == AccountID
             ).ToList();
 
             var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
 
             var order = _orderRepository.GetViewOrder().Where(x => orderIDs.Contains(x.OrderID)).ToList();
 
-            return _orderDetailRepository.CombineDetailHistory(orderDetail, order);
+            return _orderDetailRepository.CombineDetailHistory(orderDetail, order, _authService.UserID);
         }
 
         /// <summary>
@@ -148,7 +150,7 @@ namespace DrinkFood_API.Services
                 x.OrderID == OrderID
             ).ToList();
 
-            return _orderDetailRepository.GroupOrderDetailByName(orderDetail);
+            return _orderDetailRepository.GroupOrderDetailByName(orderDetail, _authService.UserID);
         }
 
         public void PostOrderDetail(RequestPostOrderDetailModel RequestData)

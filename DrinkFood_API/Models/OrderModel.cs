@@ -1,5 +1,6 @@
 ﻿using DataBase.Entities;
 using DrinkFood_API.Utility;
+using Microsoft.Identity.Client;
 
 namespace DrinkFood_API.Models
 {
@@ -135,7 +136,7 @@ namespace DrinkFood_API.Models
 
         public bool DelayClose { get; set; } = false;
 
-        public OrderListModel(ViewOrder Entity, Guid AccountID)
+        public OrderListModel(ViewOrder Entity)
         {
             #region 原始欄位
 
@@ -188,12 +189,13 @@ namespace DrinkFood_API.Models
             StatusDescPublicDesc = $"{OrderStatusDesc} {IsPublicDesc}";
 
             #endregion
+        }
 
-            #region 狀態控制欄位
-
+        public OrderListModel SetButton(Guid AccountID)
+        {
             if (OrderStatus != "98")
             {
-                if (Entity.OwnerID == AccountID)
+                if (OwnerID == AccountID)
                 {
                     CanClose = true;
                     DelayArrival = true;
@@ -201,8 +203,7 @@ namespace DrinkFood_API.Models
                 }
                 CanAdd = true;
             }
-
-            #endregion
+            return this;
         }
     }
 
@@ -234,7 +235,7 @@ namespace DrinkFood_API.Models
 
         public string SizeDesc { get; set; } = null!;
 
-        public Guid AccountID { get; set; }
+        public Guid DetailAccountID { get; set; }
 
         public string Name { get; set; } = null!;
 
@@ -257,15 +258,52 @@ namespace DrinkFood_API.Models
         public string? DetailRemark { get; set; }
     }
 
+    
     public class OrderDetailListModel : ViewOrderDetail
     {
-        public bool CanDelete { get; set; }
+        public bool CanDelete { get; set; } = false;
 
-        public OrderDetailListModel(ViewOrderDetail Entity) 
-        { 
-            
+        public string PickUpDesc { get; set; }
+
+        public OrderDetailListModel(ViewOrderDetail Entity, Guid AccountID) 
+        {
+            #region 原始欄位
+
+            OrderID = Entity.OrderID;
+            OrderDetailID = Entity.OrderDetailID;
+            DrinkFoodID = Entity.DrinkFoodID;
+            DrinkFoodName = Entity.DrinkFoodName;
+            DrinkFoodPrice = Entity.DrinkFoodPrice;
+            DrinkFoodRemark = Entity.DrinkFoodRemark;
+            SugarID = Entity.SugarID;
+            SugarDesc = Entity.SugarDesc;
+            IceID = Entity.IceID;
+            IceDesc = Entity.IceDesc;
+            SizeID = Entity.SizeID;
+            SizeDesc = Entity.SizeDesc;
+            DetailAccountID = Entity.DetailAccountID;
+            Name = Entity.Name;
+            Brief = Entity.Brief;
+            Email = Entity.Email;
+            PaymentID = Entity.PaymentID;
+            PaymentDesc = Entity.PaymentDesc ?? "尚未付款";
+            PaymentDatetime = Entity.PaymentDatetime;
+            PaymentArrived = Entity.PaymentArrived;
+            Quantity = Entity.Quantity;
+            IsPickup = Entity.IsPickup;
+            PickUpDesc = Entity.IsPickup.HasValue && Entity.IsPickup.Value ? "已取餐" : "尚未取餐";
+            DetailRemark = Entity.DetailRemark ?? "無";
+
+            #endregion
+
+            if (Entity.DetailAccountID == AccountID)
+            {
+                CanDelete = true;
+                //if (Order.OrderStatus != "98" || Order.OwnerID == AccountID)
+            }
         }
     }
+    
 
     public class ViewDetailHistory
     {
@@ -289,10 +327,11 @@ namespace DrinkFood_API.Models
 
         public string OfficeName { get; set; }
 
+        public Guid DetailAccountID { get; set; }
 
-        public ViewDetailHistory(ViewOrderDetail OrderDetail, ViewOrder Order)
+        public ViewDetailHistory(ViewOrderDetail OrderDetail, ViewOrder Order, Guid AccountID)
         {
-            OrderListModel listModel = new(Order, Guid.NewGuid());
+            OrderListModel listModel = new(Order);
 
             OrderDetailID = OrderDetail.OrderDetailID;
             ArrivalTime = listModel.ArrivalTime;
@@ -304,6 +343,7 @@ namespace DrinkFood_API.Models
             PaymentDesc = OrderDetail.PaymentDesc;
             Quantity = OrderDetail.Quantity;
             OfficeName = Order.OfficeName;
+            DetailAccountID = OrderDetail.DetailAccountID;
         }
     }
 
@@ -337,7 +377,7 @@ namespace DrinkFood_API.Models
 
         public int TotalQuantity { get; set; }
 
-        public List<ViewOrderDetail> OrderDetailList { get; set; } = new();
+        public List<OrderDetailListModel> OrderDetailList { get; set; } = new();
     }
 
     public class RequestPutPaymentModel
@@ -357,9 +397,10 @@ namespace DrinkFood_API.Models
     {
         public List<GroupOrderDetailModel> Detail { get; set; }
 
-        public ViewOrderAndDetail(ViewOrder Entity, List<GroupOrderDetailModel> EntityData) : base(Entity, Guid.NewGuid())
+        public ViewOrderAndDetail(ViewOrder Entity, List<GroupOrderDetailModel> EntityData, Guid AccountID) : base(Entity)
         {
             Detail = EntityData;
+            SetButton(AccountID);
         }
     }
 }

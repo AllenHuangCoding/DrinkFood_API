@@ -12,6 +12,8 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
+        [Inject] private readonly AuthService _authService;
+
         public AccountService(IServiceProvider provider)  : base(provider)
         {
             provider.Inject(this);
@@ -19,7 +21,11 @@ namespace DrinkFood_API.Services
 
         public List<ViewAccount> GetAccountList()
         {
-            return _accountRepository.GetAccountList();
+            if (_authService.IsAdmin)
+            {
+                return _accountRepository.GetAccountList();
+            }
+            return new List<ViewAccount>();
         }
 
 
@@ -34,33 +40,47 @@ namespace DrinkFood_API.Services
 
         public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
         {
-            _accountRepository.UpdateProfile(new UpdateProfileModel
+            if (_authService.IsAdmin || AccountID == _authService.UserID)
             {
-                AccountID = AccountID,
-                Brief = RequestData.Brief,
-                LunchDefaultPayment = RequestData.LunchDefaultPayment,
-                DrinkDefaultPayment = RequestData.DrinkDefaultPayment,
-                LunchNotify = RequestData.LunchNotify,
-                DrinkNotify = RequestData.DrinkNotify,
-                CloseNotify = RequestData.CloseNotify,
-            });
+                _accountRepository.UpdateProfile(new UpdateProfileModel
+                {
+                    AccountID = AccountID,
+                    Brief = RequestData.Brief,
+                    LunchDefaultPayment = RequestData.LunchDefaultPayment,
+                    DrinkDefaultPayment = RequestData.DrinkDefaultPayment,
+                    LunchNotify = RequestData.LunchNotify,
+                    DrinkNotify = RequestData.DrinkNotify,
+                    CloseNotify = RequestData.CloseNotify,
+                });
+            }
+            else
+            {
+                throw new ApiException("非管理員權限", 400);
+            }
         }
 
 
         public void CreateAccount(RequestCreateAccountModel RequestData)
         {
-            _accountRepository.Create(new Account
+            if (_authService.IsAdmin)
             {
-                A_name = RequestData.Name,
-                A_brief = RequestData.Brief,
-                A_email = RequestData.Email,
-                A_password = RequestData.Email,
-                A_lunch_notify = RequestData.LunchNotify,
-                A_drink_notify = RequestData.DrinkNotify,
-                A_close_notify = RequestData.CloseNotify,
-                A_default_lunch_payment = RequestData.LunchDefaultPayment,
-                A_default_drink_payment = RequestData.DrinkDefaultPayment,
-            });
+                _accountRepository.Create(new Account
+                {
+                    A_name = RequestData.Name,
+                    A_brief = RequestData.Brief,
+                    A_email = RequestData.Email,
+                    A_password = RequestData.Email,
+                    A_lunch_notify = RequestData.LunchNotify,
+                    A_drink_notify = RequestData.DrinkNotify,
+                    A_close_notify = RequestData.CloseNotify,
+                    A_default_lunch_payment = RequestData.LunchDefaultPayment,
+                    A_default_drink_payment = RequestData.DrinkDefaultPayment,
+                });
+            }
+            else
+            {
+                throw new ApiException("非管理員權限", 400);
+            }
         }
     }
 }
