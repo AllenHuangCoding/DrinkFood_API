@@ -157,9 +157,8 @@ namespace DrinkFood_API.Repository
         /// 訂單明細 (依訂購者分群)
         /// </summary>
         /// <param name="Data"></param>
-        /// <param name="AccountID"></param>
         /// <returns></returns>
-        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data, Guid AccountID)
+        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<OrderDetailListModel> Data)
         {
             return Data.GroupBy(x =>
                 x.Name
@@ -169,8 +168,18 @@ namespace DrinkFood_API.Repository
                     Name = x.Key,
                     TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
                     TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
-                    OrderDetailList = x.Select(y => new OrderDetailListModel(y, AccountID)).ToList(),
+                    OrderDetailList = x.ToList(),
                 }
+            ).ToList();
+        }
+
+        public List<ViewDetailHistory> CombineDetailHistory(List<OrderDetailListModel> OrderDetail, List<OrderListModel> Order)
+        {
+            return OrderDetail.Select(x =>
+                new ViewDetailHistory(
+                    x,
+                    Order.First(o => o.OrderID == x.OrderID)
+                )
             ).ToList();
         }
 
@@ -197,17 +206,6 @@ namespace DrinkFood_API.Repository
             {
                 throw new ApiException("非點餐者權限", 400);
             }
-        }
-
-        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order, Guid AccountID)
-        {
-            return OrderDetail.Select(x =>
-                new ViewDetailHistory(
-                    x,
-                    Order.First(o => o.OrderID == x.OrderID),
-                    AccountID
-                )
-            ).ToList();
         }
 
         #endregion

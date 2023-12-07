@@ -265,7 +265,7 @@ namespace DrinkFood_API.Models
 
         public string PickUpDesc { get; set; }
 
-        public OrderDetailListModel(ViewOrderDetail Entity, Guid AccountID) 
+        public OrderDetailListModel(ViewOrderDetail Entity) 
         {
             #region 原始欄位
 
@@ -295,12 +295,15 @@ namespace DrinkFood_API.Models
             DetailRemark = Entity.DetailRemark ?? "無";
 
             #endregion
+        }
 
-            if (Entity.DetailAccountID == AccountID)
+        public OrderDetailListModel SetButton(Guid AccountID)
+        {
+            if (DetailAccountID == AccountID)
             {
                 CanDelete = true;
-                //if (Order.OrderStatus != "98" || Order.OwnerID == AccountID)
             }
+            return this;
         }
     }
     
@@ -329,20 +332,18 @@ namespace DrinkFood_API.Models
 
         public Guid DetailAccountID { get; set; }
 
-        public ViewDetailHistory(ViewOrderDetail OrderDetail, ViewOrder Order, Guid AccountID)
+        public ViewDetailHistory(OrderDetailListModel OrderDetail, OrderListModel listModel)
         {
-            OrderListModel listModel = new(Order);
-
             OrderDetailID = OrderDetail.OrderDetailID;
             ArrivalTime = listModel.ArrivalTime;
-            BrandName = Order.BrandName;
+            BrandName = listModel.BrandName;
             BrandStoreName = listModel.BrandStoreName;
             DrinkFoodName = $"{OrderDetail.DrinkFoodName} / {OrderDetail.SugarDesc} / {OrderDetail.IceDesc}";
             DrinkFoodPrice = OrderDetail.DrinkFoodPrice;
             DetailRemark = OrderDetail.DetailRemark;
             PaymentDesc = OrderDetail.PaymentDesc;
             Quantity = OrderDetail.Quantity;
-            OfficeName = Order.OfficeName;
+            OfficeName = listModel.OfficeName;
             DetailAccountID = OrderDetail.DetailAccountID;
         }
     }
@@ -393,14 +394,46 @@ namespace DrinkFood_API.Models
     #endregion
 
 
-    public class ViewOrderAndDetail : OrderListModel
+    public class ViewOrderAndDetail
     {
+        public string OwnerName { get; set; }
+
+        public string OrderNo { get; set; }
+
+        public string OrderStatusDesc { get; set; }
+
+        public string OfficeName { get; set; }
+
+        public string ArrivalTime { get; set; }
+
+        public string CloseTime { get; set; }
+
+        public string CreateTime { get; set; }
+
+        public bool CanAdd { get; set; } = false;
+
+        public bool CanClose { get; set; } = false;
+
+        public bool DelayArrival { get; set; } = false;
+
+        public bool DelayClose { get; set; } = false;
+
         public List<GroupOrderDetailModel> Detail { get; set; }
 
-        public ViewOrderAndDetail(ViewOrder Entity, List<GroupOrderDetailModel> EntityData, Guid AccountID) : base(Entity)
+        public ViewOrderAndDetail(OrderListModel Entity, List<GroupOrderDetailModel> EntityData)
         {
+            OrderNo = Entity.OrderNo;
+            OrderStatusDesc = Entity.OrderStatusDesc;
+            ArrivalTime = Entity.ArrivalTime;
+            CloseTime = Entity.CloseTime;
+            OfficeName = Entity.OfficeName;
+            OwnerName = Entity.OwnerName;
+            CreateTime = Entity.CreateTime;
+            CanAdd = Entity.CanAdd;
+            CanClose = Entity.CanClose;
+            DelayArrival = Entity.DelayArrival;
+            DelayClose = Entity.DelayClose;
             Detail = EntityData;
-            SetButton(AccountID);
         }
     }
 }

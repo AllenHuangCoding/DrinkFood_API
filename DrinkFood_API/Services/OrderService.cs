@@ -3,6 +3,7 @@ using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
+using CodeShare.Libs.BaseProject.Extensions;
 
 namespace DrinkFood_API.Services
 {
@@ -28,13 +29,30 @@ namespace DrinkFood_API.Services
         #region 訂單查詢 (清單/詳細/選項選單)
 
         /// <summary>
-        /// 訂單清單
+        /// 訂單清單 (公團 + 私團)
         /// </summary>
         /// <returns></returns>
         public List<OrderListModel> GetOrderList()
         {
-            // 開團清單 = 公團 + 私團
-            return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x).SetButton(_authService.UserID)).ToList();
+            // 公團 (從資料庫搜尋)
+            List<ViewOrder> publicOrder = _orderRepository.GetViewOrder().Where(x => 
+                x.IsPublic
+            ).ToList();
+
+            // 私團 (從已加入的私團明細往回推私團資訊)
+            List<ViewOrderDetail> privateOrderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x => x.DetailAccountID == _authService.UserID).ToList();
+            List<ViewOrder> privateOrder = _orderRepository.GetViewOrder().Where(x =>
+                !x.IsPublic
+            ).AsEnumerable().Where(x =>
+                privateOrderDetail.SelectProperty(y => y.OrderID).Contains(x.OrderID)
+            ).ToList();
+
+            // 組合公團 + 私團並轉型
+            return publicOrder.Concat(privateOrder).OrderBy(x => 
+                x.CloseTime
+            ).Select(x => 
+                new OrderListModel(x).SetButton(_authService.UserID)
+            ).ToList();
         }
 
         /// <summary>
@@ -45,11 +63,23 @@ namespace DrinkFood_API.Services
         /// <exception cref="ApiException"></exception>
         public ViewOrderAndDetail GetOrder(Guid OrderID)
         {
-            var order = _orderRepository.GetViewOrder().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
+            // 訂單原始資料
+            ViewOrder order = _orderRepository.GetViewOrder().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
 
-            var groupOrderDetail = GetOrderDetailList(OrderID);
+            // 訂單明細原始資料
+            List<ViewOrderDetail> orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+                x.OrderID == order.OrderID
+            ).ToList();
 
-            return new ViewOrderAndDetail(order, groupOrderDetail, _authService.UserID);
+            // 訂單與訂單明細轉型
+            OrderListModel orderList = new OrderListModel(order).SetButton(_authService.UserID);
+            List<OrderDetailListModel> detailList = orderDetail.Select(x => new OrderDetailListModel(x).SetButton(_authService.UserID)).ToList();
+
+            // 訂單明細依訂購者分群
+            List<GroupOrderDetailModel> groupOrderDetail = _orderDetailRepository.GroupOrderDetailByName(detailList);
+
+            // 組合訂單與訂單明細欄位
+            return new ViewOrderAndDetail(orderList, groupOrderDetail);
         }
 
         /// <summary>
@@ -175,19 +205,7 @@ namespace DrinkFood_API.Services
 
         #endregion
 
-        #region 訂單明細查詢 (訂購者明細/歷史紀錄)
-
-        /// <summary>
-        /// 訂單明細 (依訂購者分群)
-        /// </summary>
-        public List<GroupOrderDetailModel> GetOrderDetailList(Guid OrderID)
-        {
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.OrderID == OrderID
-            ).ToList();
-
-            return _orderDetailRepository.GroupOrderDetailByName(orderDetail, _authService.UserID);
-        }
+        #region 訂單明細查詢 (訂單明細歷史紀錄)
 
         /// <summary>
         /// 訂單明細歷史紀錄
@@ -196,15 +214,22 @@ namespace DrinkFood_API.Services
         /// <returns></returns>
         public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            // 訂單明細原始資料
+            List<ViewOrderDetail> orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
                 x.DetailAccountID == AccountID
             ).ToList();
 
-            var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
+            // 訂單原始資料
+            List<Guid> ids = orderDetail.SelectProperty(y => y.OrderID);
+            List<ViewOrder> order = _orderRepository.GetViewOrder().Where(x =>
+                ids.Contains(x.OrderID)
+            ).AsEnumerable().ToList();
 
-            var order = _orderRepository.GetViewOrder().Where(x => orderIDs.Contains(x.OrderID)).ToList();
+            // 訂單與訂單明細轉型
+            List<OrderDetailListModel> detailList = orderDetail.Select(x => new OrderDetailListModel(x).SetButton(_authService.UserID)).ToList();
+            List<OrderListModel> orderList = order.Select(x => new OrderListModel(x).SetButton(_authService.UserID)).ToList();
 
-            return _orderDetailRepository.CombineDetailHistory(orderDetail, order, _authService.UserID);
+            return _orderDetailRepository.CombineDetailHistory(detailList, orderList);
         }
 
         #endregion
