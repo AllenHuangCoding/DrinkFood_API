@@ -1,5 +1,4 @@
-﻿using Aspose.Cells;
-using DataBase.Entities;
+﻿using DataBase.Entities;
 using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
@@ -26,21 +25,24 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        #region 訂單
+        #region 訂單查詢 (清單/詳細/選項選單)
 
-        public List<ViewOrder> GetMyOrderList(Guid AccountID, RequestGetMyOrderListModel RequestData)
-        {
-            return _orderRepository.GetViewOrder().Where(x => 
-                x.OwnerID == AccountID
-            ).OrderByDescending(x => x.OrderID).ToList();
-        }
-
+        /// <summary>
+        /// 訂單清單
+        /// </summary>
+        /// <returns></returns>
         public List<OrderListModel> GetOrderList()
         {
             // 開團清單 = 公團 + 私團
             return _orderRepository.GetViewOrder().OrderBy(x => x.CloseTime).Select(x => new OrderListModel(x).SetButton(_authService.UserID)).ToList();
         }
 
+        /// <summary>
+        /// 訂單詳細
+        /// </summary>
+        /// <param name="OrderID"></param>
+        /// <returns></returns>
+        /// <exception cref="ApiException"></exception>
         public ViewOrderAndDetail GetOrder(Guid OrderID)
         {
             var order = _orderRepository.GetViewOrder().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
@@ -50,6 +52,11 @@ namespace DrinkFood_API.Services
             return new ViewOrderAndDetail(order, groupOrderDetail, _authService.UserID);
         }
 
+        /// <summary>
+        /// 訂單選項選單
+        /// </summary>
+        /// <param name="TypeID"></param>
+        /// <returns></returns>
         public ResponseOrderDialogOptions GetCreateOrderDialogOptions(Guid? TypeID)
         {
             return new ResponseOrderDialogOptions
@@ -60,6 +67,14 @@ namespace DrinkFood_API.Services
             };
         }
 
+        #endregion
+
+        #region 訂單流程動作 (新增訂單/加入訂單)
+
+        /// <summary>
+        /// 新增訂單
+        /// </summary>
+        /// <param name="RequestData"></param>
         public void PostOrder(RequestPostOrderModel RequestData)
         {
             _orderRepository.Create(new Order
@@ -81,19 +96,43 @@ namespace DrinkFood_API.Services
         }
 
         /// <summary>
-        /// 點連結自行加入訂單
+        /// 加入訂單
         /// </summary>
         /// <param name="OrderID"></param>
         public void JoinOrder(Guid OrderID)
         {
-            // 加入訂單
             _orderDetailRepository.Create(new OrderDetail
             {
                 OD_order_id = OrderID,
-                OD_account_id = Guid.NewGuid(),
-                OD_create_account_id = Guid.NewGuid(),
+                OD_account_id = _authService.UserID,
+                OD_create_account_id = _authService.UserID,
             });
         }
+
+        #endregion
+
+        #region 更改訂單狀態 (關閉訂單/完成訂單)
+
+        /// <summary>
+        /// 關閉訂單 (限團長與本人)
+        /// </summary>
+        public void CloseOrder(Guid OrderID)
+        {
+            _orderRepository.CloseOrder(OrderID);
+        }
+
+        /// <summary>
+        /// 完成訂單 (限團長)
+        /// </summary>
+        /// <param name="OrderID"></param>
+        public void FinishOrder(Guid OrderID)
+        {
+            _orderRepository.FinishOrder(OrderID);
+        }
+
+        #endregion
+
+        #region 更改訂單欄位 (用餐時間/結單時間)
 
         /// <summary>
         /// 更改用餐時間 (限團長)
@@ -108,26 +147,53 @@ namespace DrinkFood_API.Services
         /// </summary>
         public void PutCloseTime(Guid OrderID, RequestPutCloseTimeModel RequestData)
         {
-            _orderRepository.PutCloseTime(OrderID,RequestData.CloseTime);
-        }
-
-        /// <summary>
-        /// 關閉訂單 (限團長與本人)
-        /// </summary>
-        public void CloseOrder(Guid OrderID)
-        {
-            _orderRepository.CloseOrder(OrderID);
-        }
-
-        private static string CreateOrderNo()
-        {
-            return string.Format("O{0}{1:0000}", DateTime.Now.ToString("yyyyMMdd"), new Random().Next(1, 9999));
+            _orderRepository.PutCloseTime(OrderID, RequestData.CloseTime);
         }
 
         #endregion
 
-        #region 訂單詳細
+        #region 訂單通知 (遲到/遲到抵達)
 
+        /// <summary>
+        /// 遲到通知
+        /// </summary>
+        /// <param name="OrderID"></param>
+        public void DelayNotify(Guid OrderID)
+        {
+
+        }
+
+        /// <summary>
+        /// 遲到抵達通知
+        /// </summary>
+        /// <param name="OrderID"></param>
+        public void DelayArrivalNotify(Guid OrderID)
+        {
+
+        }
+
+
+        #endregion
+
+        #region 訂單明細查詢 (訂購者明細/歷史紀錄)
+
+        /// <summary>
+        /// 訂單明細 (依訂購者分群)
+        /// </summary>
+        public List<GroupOrderDetailModel> GetOrderDetailList(Guid OrderID)
+        {
+            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+                x.OrderID == OrderID
+            ).ToList();
+
+            return _orderDetailRepository.GroupOrderDetailByName(orderDetail, _authService.UserID);
+        }
+
+        /// <summary>
+        /// 訂單明細歷史紀錄
+        /// </summary>
+        /// <param name="AccountID"></param>
+        /// <returns></returns>
         public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
             var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
@@ -141,18 +207,14 @@ namespace DrinkFood_API.Services
             return _orderDetailRepository.CombineDetailHistory(orderDetail, order, _authService.UserID);
         }
 
+        #endregion
+
+        #region 訂單明細流程動作 (加入品項/刪除品項)
+
         /// <summary>
-        /// 查看訂單內容 (目前皆可以看到，也可以考慮像Nidin自己看自己、團長看全部)
+        /// 加入品項 (限本人)
         /// </summary>
-        public List<GroupOrderDetailModel> GetOrderDetailList(Guid OrderID)
-        {
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.OrderID == OrderID
-            ).ToList();
-
-            return _orderDetailRepository.GroupOrderDetailByName(orderDetail, _authService.UserID);
-        }
-
+        /// <param name="RequestData"></param>
         public void PostOrderDetail(RequestPostOrderDetailModel RequestData)
         {
             _orderDetailRepository.PostOrderDetail(new PostOrderDetailModel
@@ -167,7 +229,7 @@ namespace DrinkFood_API.Services
         }
 
         /// <summary>
-        /// 刪除訂單品項 (限團長與本人)
+        /// 刪除品項 (限團長與本人)
         /// </summary>
         public void DeleteOrderDetail(Guid OrderDetailID)
         {
@@ -177,6 +239,10 @@ namespace DrinkFood_API.Services
 
             _orderDetailRepository.DeleteOrderDetail(OrderDetailID);
         }
+
+        #endregion
+
+        #region 更改訂單明細欄位 (更改付款方式/更改付款時間/更改取餐狀態)
 
         /// <summary>
         /// 更改付款方式 (限團長)
@@ -192,6 +258,24 @@ namespace DrinkFood_API.Services
         public void PutPaymentDateTime(Guid OrderDetailID, RequestPutPaymentDateTimeModel RequestData)
         {
             _orderDetailRepository.PutPaymentDatetime(OrderDetailID, RequestData.PaymentDateTime);
+        }
+
+        /// <summary>
+        /// 更改取餐狀態 (限團長)
+        /// </summary>
+        /// <param name="OrderDetailID"></param>
+        public void PutPickup(Guid OrderDetailID)
+        {
+            
+        }
+
+        #endregion
+
+        #region 私有方法 (產生訂單編號)
+
+        private static string CreateOrderNo()
+        {
+            return string.Format("O{0}{1:0000}", DateTime.Now.ToString("yyyyMMdd"), new Random().Next(1, 9999));
         }
 
         #endregion

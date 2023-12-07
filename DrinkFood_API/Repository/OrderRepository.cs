@@ -40,6 +40,14 @@ namespace DrinkFood_API.Repository
             Update(OrderID, order);
         }
 
+        public void FinishOrder(Guid OrderID)
+        {
+            var order = GetById(OrderID) ?? throw new ApiException("訂單ID不存在", 400);
+            order.O_status = "02";
+            order.O_update = DateTime.Now;
+            Update(OrderID, order);
+        }
+
         public void CheckOwnerOrder(Guid AccountID, Guid OrderID)
         {
             var order = GetViewOrder().Where(x =>
