@@ -18,82 +18,7 @@ namespace DrinkFood_API.Repository
             provider.Inject(this);
         }
 
-        public void CheckMyOrderDetail(Guid AccountID, Guid OrderDetailID)
-        {
-            var orderDetail = GetViewOrderDetail().Where(x =>
-                x.OrderDetailID == OrderDetailID
-            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
-
-            if (orderDetail.DetailAccountID != AccountID)
-            {
-                throw new ApiException("非點餐者權限", 400);
-            }
-        }
-
-        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data, Guid AccountID)
-        {
-            return Data.GroupBy(x => 
-                x.Name
-            ).Select(x =>
-                new GroupOrderDetailModel
-                {
-                    Name = x.Key,
-                    TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
-                    TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
-                    OrderDetailList = x.Select(y => new OrderDetailListModel(y, AccountID)).ToList(),
-                }
-            ).ToList();
-        }
-
-        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order, Guid AccountID)
-        {
-            return OrderDetail.Select(x => 
-                new ViewDetailHistory(
-                    x,
-                    Order.First(o => o.OrderID == x.OrderID),
-                    AccountID
-                )
-            ).ToList();
-        }
-
-        public void PostOrderDetail(PostOrderDetailModel Data)
-        {
-            Create(new OrderDetail
-            {
-                OD_order_id = Data.OD_order_id,
-                OD_drink_food_id = Data.OD_drink_food_id,
-                OD_sugar_id = Data.OD_sugar_id,
-                OD_ice_id = Data.OD_ice_id,
-                OD_size_id = Data.OD_size_id,
-                OD_account_id = Data.OD_account_id,
-                OD_remark = Data.OD_remark,
-            });
-        }
-
-        public void DeleteOrderDetail(Guid OrderDetailID)
-        {
-            _ = GetViewOrderDetail().Where(x =>
-                x.OrderDetailID == OrderDetailID
-            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
-
-            Delete(OrderDetailID);
-        }
-
-        public void PutPayment(Guid OrderDetailID, Guid? PaymentID)
-        {
-            var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
-            orderDetail.OD_payment_id = PaymentID;
-            orderDetail.OD_update = DateTime.Now;
-            Update(OrderDetailID, orderDetail);
-        }
-
-        public void PutPaymentDatetime(Guid OrderDetailID, DateTime? PaymentDateTime)
-        {
-            var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
-            orderDetail.OD_payment_datetime = PaymentDateTime;
-            orderDetail.OD_update = DateTime.Now;
-            Update(OrderDetailID, orderDetail);
-        }
+        #region 訂單明細查詢 (View)
 
         public IQueryable<ViewOrderDetail> GetViewOrderDetail()
         {
@@ -148,6 +73,107 @@ namespace DrinkFood_API.Repository
                    };
         }
 
+        #endregion
+
+        #region 訂單明細流程動作 (加入品項/刪除品項)
+
+        /// <summary>
+        /// 加入品項 (限本人)
+        /// </summary>
+        /// <param name="Data"></param>
+        public void PostOrderDetail(PostOrderDetailModel Data)
+        {
+            Create(new OrderDetail
+            {
+                OD_order_id = Data.OD_order_id,
+                OD_drink_food_id = Data.OD_drink_food_id,
+                OD_sugar_id = Data.OD_sugar_id,
+                OD_ice_id = Data.OD_ice_id,
+                OD_size_id = Data.OD_size_id,
+                OD_account_id = Data.OD_account_id,
+                OD_remark = Data.OD_remark,
+            });
+        }
+
+        /// <summary>
+        /// 刪除品項 (限團長與本人)
+        /// </summary>
+        /// <param name="OrderDetailID"></param>
+        /// <exception cref="ApiException"></exception>
+        public void DeleteOrderDetail(Guid OrderDetailID)
+        {
+            _ = GetViewOrderDetail().Where(x =>
+                x.OrderDetailID == OrderDetailID
+            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
+
+            Delete(OrderDetailID);
+        }
+
+        #endregion
+
+        #region 更改訂單明細欄位 (更改付款方式/更改付款時間/更改取餐狀態)
+
+        /// <summary>
+        /// 更改付款方式 (限團長)
+        /// </summary>
+        /// <param name="OrderDetailID"></param>
+        /// <param name="PaymentID"></param>
+        /// <exception cref="ApiException"></exception>
+        public void PutPayment(Guid OrderDetailID, Guid? PaymentID)
+        {
+            var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
+            orderDetail.OD_payment_id = PaymentID;
+            orderDetail.OD_update = DateTime.Now;
+            Update(OrderDetailID, orderDetail);
+        }
+
+        /// <summary>
+        /// 更改付款時間 (限團長)
+        /// </summary>
+        /// <param name="OrderDetailID"></param>
+        /// <param name="PaymentDateTime"></param>
+        /// <exception cref="ApiException"></exception>
+        public void PutPaymentDatetime(Guid OrderDetailID, DateTime? PaymentDateTime)
+        {
+            var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
+            orderDetail.OD_payment_datetime = PaymentDateTime;
+            orderDetail.OD_update = DateTime.Now;
+            Update(OrderDetailID, orderDetail);
+        }
+
+        /// <summary>
+        /// 更改取餐狀態 (限團長)
+        /// </summary>
+        public void PutPickup()
+        {
+
+        }
+
+        #endregion
+
+        #region 其他方法 (訂單明細依訂購者分群)
+
+        /// <summary>
+        /// 訂單明細 (依訂購者分群)
+        /// </summary>
+        /// <param name="Data"></param>
+        /// <param name="AccountID"></param>
+        /// <returns></returns>
+        public List<GroupOrderDetailModel> GroupOrderDetailByName(List<ViewOrderDetail> Data, Guid AccountID)
+        {
+            return Data.GroupBy(x =>
+                x.Name
+            ).Select(x =>
+                new GroupOrderDetailModel
+                {
+                    Name = x.Key,
+                    TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
+                    TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
+                    OrderDetailList = x.Select(y => new OrderDetailListModel(y, AccountID)).ToList(),
+                }
+            ).ToList();
+        }
+
         public OrderDetail? Exist(Guid OrderDetailID)
         {
             var orderDetail = FindOne(x =>
@@ -160,5 +186,30 @@ namespace DrinkFood_API.Repository
             }
             return orderDetail;
         }
+
+        public void CheckMyOrderDetail(Guid AccountID, Guid OrderDetailID)
+        {
+            var orderDetail = GetViewOrderDetail().Where(x =>
+                x.OrderDetailID == OrderDetailID
+            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
+
+            if (orderDetail.DetailAccountID != AccountID)
+            {
+                throw new ApiException("非點餐者權限", 400);
+            }
+        }
+
+        public List<ViewDetailHistory> CombineDetailHistory(List<ViewOrderDetail> OrderDetail, List<ViewOrder> Order, Guid AccountID)
+        {
+            return OrderDetail.Select(x =>
+                new ViewDetailHistory(
+                    x,
+                    Order.First(o => o.OrderID == x.OrderID),
+                    AccountID
+                )
+            ).ToList();
+        }
+
+        #endregion
     }
 }
