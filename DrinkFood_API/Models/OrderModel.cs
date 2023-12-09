@@ -67,6 +67,8 @@ namespace DrinkFood_API.Models
 
         public string OwnerName { get; set; } = null!;
 
+        public string? OwnerBrief {  get; set; }
+
         public string OrderNo { get; set; } = null!;
 
         public Guid Type { get; set; }
@@ -151,6 +153,7 @@ namespace DrinkFood_API.Models
             OrderID = Entity.OrderID;
             OwnerID = Entity.OwnerID;
             OwnerName = Entity.OwnerName;
+            OwnerBrief = Entity.OwnerBrief;
             OrderNo = Entity.OrderNo;
             Type = Entity.Type;
             TypeDesc = Entity.TypeDesc;
@@ -187,7 +190,7 @@ namespace DrinkFood_API.Models
             #region 合併欄位
 
             BrandStoreName = $"{BrandName} {StoreName}";
-            OfficeOwner = $"{OfficeName} {OwnerName}";
+            OfficeOwner = $"{OfficeName} {(!string.IsNullOrWhiteSpace(OwnerBrief) ? OwnerBrief : OwnerName)}";
             StatusDescPublicDesc = $"{OrderStatusDesc} {IsPublicDesc}";
 
             #endregion
@@ -474,6 +477,10 @@ namespace DrinkFood_API.Models
 
         public bool ShowFinish { get; set; } = false;
 
+        public int OrderPrice { get; set; } = 0;
+
+        public int OrderQuantity { get; set; } = 0;
+
         public List<GroupOrderDetailModel> Detail { get; set; }
 
         public ViewOrderAndDetail(OrderListModel Entity, List<GroupOrderDetailModel> EntityData)
@@ -499,6 +506,9 @@ namespace DrinkFood_API.Models
             ShowDelayArrivalNotify = Entity.ShowDelayArrivalNotify;
             ShowFinish = Entity.ShowFinish;
             Detail = EntityData;
+
+            OrderPrice = Detail.Select(x => x.TotalPrice).Sum();
+            OrderQuantity = Detail.Select(x => x.TotalQuantity).Sum();
         }
     }
 

@@ -32,6 +32,7 @@ namespace DrinkFood_API.Repository
                        OrderID = order.O_id,
                        OwnerID = order.O_create_account_id,
                        OwnerName = account.A_name,
+                       OwnerBrief = account.A_brief,
                        OrderNo = order.O_no,
                        Type = order.O_type,
                        TypeDesc = typeCodeTable.CT_desc,

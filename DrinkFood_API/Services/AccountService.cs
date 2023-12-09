@@ -19,25 +19,24 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        public List<ViewAccount> GetAccountList()
+        #region 普通使用者 (查詢個人資料/修改個人資料/午餐與飲料付款方式選單)
+
+        /// <summary>
+        /// 查詢個人資料
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ApiException"></exception>
+        public ViewAccount GetProfile()
         {
-            if (_authService.IsAdmin)
-            {
-                return _accountRepository.GetAccountList();
-            }
-            return new List<ViewAccount>();
+            return _accountRepository.GetViewAccount().Where(x => x.AccountID == _authService.UserID).FirstOrDefault() ?? throw new ApiException("使用者ID不存在", 400);
         }
 
-
-        public ResponseProfileDialogOptions GetProfileDialogOptions()
-        {
-            return new ResponseProfileDialogOptions
-            {
-                LunchPayment = _codeTableRepository.FindAll(x => x.CT_type == "LunchPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
-                DrinkPayment = _codeTableRepository.FindAll(x => x.CT_type == "DrinkPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
-            };
-        }
-
+        /// <summary>
+        /// 修改個人資料
+        /// </summary>
+        /// <param name="AccountID"></param>
+        /// <param name="RequestData"></param>
+        /// <exception cref="ApiException"></exception>
         public void UpdateProfile(Guid AccountID, RequestUpdateProfileModel RequestData)
         {
             if (_authService.IsAdmin || AccountID == _authService.UserID)
@@ -59,7 +58,47 @@ namespace DrinkFood_API.Services
             }
         }
 
+        /// <summary>
+        /// 午餐與飲料付款方式選單
+        /// </summary>
+        /// <returns></returns>
+        public ResponseProfileDialogOptions GetProfileDialogOptions()
+        {
+            return new ResponseProfileDialogOptions
+            {
+                LunchPayment = _codeTableRepository.FindAll(x => x.CT_type == "LunchPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+                DrinkPayment = _codeTableRepository.FindAll(x => x.CT_type == "DrinkPayment").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
+            };
+        }
 
+        #endregion
+
+        #region Line相關功能
+
+
+
+        #endregion
+
+        #region 管理者獨有功能 (使用者清單/新增使用者)
+
+        /// <summary>
+        /// 使用者清單
+        /// </summary>
+        /// <returns></returns>
+        public List<ViewAccount> GetAccountList()
+        {
+            if (_authService.IsAdmin)
+            {
+                return _accountRepository.GetViewAccount().ToList();
+            }
+            return new List<ViewAccount>();
+        }
+
+        /// <summary>
+        /// 新增使用者
+        /// </summary>
+        /// <param name="RequestData"></param>
+        /// <exception cref="ApiException"></exception>
         public void CreateAccount(RequestCreateAccountModel RequestData)
         {
             if (_authService.IsAdmin)
@@ -82,5 +121,8 @@ namespace DrinkFood_API.Services
                 throw new ApiException("非管理員權限", 400);
             }
         }
+
+        #endregion
+
     }
 }

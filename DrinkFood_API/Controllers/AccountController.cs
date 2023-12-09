@@ -18,18 +18,18 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 取得使用者清單
+        /// 查詢個人資料
         /// </summary>
-        [ProducesResponseType(typeof(List<ViewAccount>), StatusCodes.Status200OK)]
-        [HttpGet("GetAccountList")]
-        public IActionResult GetAccountList()
+        [ProducesResponseType(typeof(ViewAccount), StatusCodes.Status200OK)]
+        [HttpGet("GetProfile")]
+        public IActionResult GetProfile()
         {
-            var Response = _accountService.GetAccountList();
-            return Json(new ResponseData<List<ViewAccount>>(Response, Response.Count));
+            var Response = _accountService.GetProfile();
+            return Json(new ResponseData<ViewAccount>(Response, 1));
         }
 
         /// <summary>
-        /// 修改基本資料
+        /// 修改個人資料
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
         [HttpPut("UpdateProfile/{AccountID}")]
@@ -40,7 +40,7 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 修改基本資料選單 (午餐付款方式、飲料付款方式)
+        /// 午餐與飲料付款方式選單
         /// </summary>
         [ProducesResponseType(typeof(ResponseProfileDialogOptions), StatusCodes.Status200OK)]
         [HttpGet("GetProfileDialogOptions")]
@@ -50,6 +50,16 @@ namespace DrinkFood_API.Controllers
             return Json(new ResponseData<ResponseProfileDialogOptions>(Response, 1));
         }
 
+        /// <summary>
+        /// 使用者清單
+        /// </summary>
+        [ProducesResponseType(typeof(List<ViewAccount>), StatusCodes.Status200OK)]
+        [HttpGet("GetAccountList")]
+        public IActionResult GetAccountList()
+        {
+            var Response = _accountService.GetAccountList();
+            return Json(new ResponseData<List<ViewAccount>>(Response, Response.Count));
+        }
 
         /// <summary>
         /// 新增使用者
@@ -61,6 +71,5 @@ namespace DrinkFood_API.Controllers
             _accountService.CreateAccount(RequestData);
             return Json(new ResponseData<object?>(null));
         }
-
     }
 }
