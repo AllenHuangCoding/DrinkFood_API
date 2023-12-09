@@ -1,4 +1,5 @@
 ﻿using CodeShare.Libs.BaseProject;
+using CodeShare.Libs.BaseProject.Extensions;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 
@@ -37,7 +38,7 @@ namespace DrinkFood_API.Services
 
                 if (lastOrder != null)
                 {
-                    item.PreviousOrderDate = lastOrder.ArrivalTime.ToString("yyyy-MM-dd HH:mm");
+                    item.PreviousOrderDate = lastOrder.ArrivalTime.ToDateHourMinute();
                 }
             }
 

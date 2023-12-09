@@ -17,17 +17,6 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 歷史紀錄
-        /// </summary>
-        [ProducesResponseType(typeof(List<ViewDetailHistory>), StatusCodes.Status200OK)]
-        [HttpGet("GetOrderDetailHistory/{AccountID}")]
-        public IActionResult GetOrderDetailHistory(Guid AccountID)
-        {
-            List<ViewDetailHistory> Response = _orderService.GetOrderDetailHistory(AccountID);
-            return Json(new ResponseData<List<ViewDetailHistory>>(Response, Response.Count));
-        }
-
-        /// <summary>
         /// 訂單清單
         /// </summary>
         [ProducesResponseType(typeof(List<OrderListModel>), StatusCodes.Status200OK)]
@@ -83,6 +72,28 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 關閉訂單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("CloseOrder/{OrderID}")]
+        public IActionResult CloseOrder(Guid OrderID)
+        {
+            _orderService.CloseOrder(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 完成訂單
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("FinishOrder/{OrderID}")]
+        public IActionResult FinishOrder(Guid OrderID)
+        {
+            _orderService.FinishOrder(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
         /// 修改用餐時間
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
@@ -105,14 +116,36 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 關閉訂單
+        /// 遲到通知
         /// </summary>
         [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
-        [HttpPut("CloseOrder/{OrderID}")]
-        public IActionResult CloseOrder(Guid OrderID)
+        [HttpPut("DelayNotify/{OrderID}")]
+        public IActionResult DelayNotify(Guid OrderID)
         {
-            _orderService.CloseOrder(OrderID);
+            _orderService.DelayNotify(OrderID);
             return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 遲到抵達通知
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("DelayArrivalNotify/{OrderID}")]
+        public IActionResult DelayArrivalNotify(Guid OrderID)
+        {
+            _orderService.DelayArrivalNotify(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 訂單明細歷史紀錄
+        /// </summary>
+        [ProducesResponseType(typeof(List<ViewDetailHistory>), StatusCodes.Status200OK)]
+        [HttpGet("GetOrderDetailHistory/{AccountID}")]
+        public IActionResult GetOrderDetailHistory(Guid AccountID)
+        {
+            List<ViewDetailHistory> Response = _orderService.GetOrderDetailHistory(AccountID);
+            return Json(new ResponseData<List<ViewDetailHistory>>(Response, Response.Count));
         }
 
         /// <summary>
@@ -156,6 +189,17 @@ namespace DrinkFood_API.Controllers
         public IActionResult PutPaymentDateTime(Guid OrderDetailID, [FromBody] RequestPutPaymentDateTimeModel RequestData)
         {
             _orderService.PutPaymentDateTime(OrderDetailID, RequestData);
+            return Json(new ResponseData<object?>(null, 1));
+        }
+
+        /// <summary>
+        /// 更改取餐狀態
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("PutPickup/{OrderDetailID}")]
+        public IActionResult PutPickup(Guid OrderDetailID)
+        {
+            _orderService.PutPickup(OrderDetailID);
             return Json(new ResponseData<object?>(null, 1));
         }
     }

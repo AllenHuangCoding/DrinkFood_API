@@ -1,6 +1,8 @@
-﻿using DataBase.Entities;
+﻿using CodeShare.Libs.BaseProject.Extensions;
+using DataBase.Entities;
 using DrinkFood_API.Utility;
 using Microsoft.Identity.Client;
+using Org.BouncyCastle.Bcpg;
 
 namespace DrinkFood_API.Models
 {
@@ -128,13 +130,19 @@ namespace DrinkFood_API.Models
 
         public new string CreateTime { get; set; }
 
-        public bool CanAdd { get; set; } = false;
+        public bool ShowAdd { get; set; } = false;
 
-        public bool CanClose { get; set; } = false;
+        public bool ShowClose { get; set; } = false;
 
-        public bool DelayArrival { get; set; } = false;
+        public bool ShowDelayArrival { get; set; } = false;
 
-        public bool DelayClose { get; set; } = false;
+        public bool ShowDelayClose { get; set; } = false;
+
+        public bool ShowDelayNotify { get; set; } = false;
+
+        public bool ShowDelayArrivalNotify { get; set; } = false;
+
+        public bool ShowFinish { get; set; } = false;
 
         public OrderListModel(ViewOrder Entity)
         {
@@ -168,17 +176,11 @@ namespace DrinkFood_API.Models
 
             #region 轉換欄位
 
-            OrderStatusDesc = OrderStatus switch
-            {
-                "99" => "刪除",
-                "98" => "關閉",
-                "01" => DateTime.Now > Entity.CloseTime ? "已結單" : "開放點餐",
-                _ => "",
-            };
+            OrderStatusDesc = new OrderExtension().ConvertOrderStatus(Entity.OrderStatus, Entity.CloseTime);
             IsPublicDesc = Entity.IsPublic ? "公團" : "私團";
-            ArrivalTime = Entity.ArrivalTime.ToString("yyyy-MM-dd HH:mm");
-            CloseTime = Entity.CloseTime.ToString("yyyy-MM-dd HH:mm");
-            CreateTime = Entity.CreateTime.ToString("yyyy-MM-dd HH:mm");
+            ArrivalTime = Entity.ArrivalTime.ToDateHourMinute();
+            CloseTime = Entity.CloseTime.ToDateHourMinute();
+            CreateTime = Entity.CreateTime.ToDateHourMinute();
 
             #endregion
 
@@ -193,15 +195,28 @@ namespace DrinkFood_API.Models
 
         public OrderListModel SetButton(Guid AccountID)
         {
-            if (OrderStatus != "98")
+            switch (OrderStatus)
             {
-                if (OwnerID == AccountID)
-                {
-                    CanClose = true;
-                    DelayArrival = true;
-                    DelayClose = true;
-                }
-                CanAdd = true;
+                case "01":
+                    if (DateTime.Now <= Convert.ToDateTime(CloseTime))
+                    {
+                        ShowAdd = true;
+                    }
+                    if (OwnerID == AccountID)
+                    {
+                        ShowAdd = true;
+                        ShowClose = true;
+                        ShowDelayArrival = true;
+                        ShowDelayClose = true;
+                        ShowDelayNotify = true;
+                        ShowDelayArrivalNotify = true;
+                        ShowFinish = true;
+                    }
+                    break;
+                case "02":
+                case "98":
+                default:
+                    break;
             }
             return this;
         }
@@ -256,12 +271,19 @@ namespace DrinkFood_API.Models
         public bool? IsPickup { get; set; }
 
         public string? DetailRemark { get; set; }
+
+        // 用以判斷刪除按鈕的訂單欄位
+        public string OrderStatus {  get; set; } = null!;
+
+        public DateTime CloseTime {  get; set; }
+
+        public Guid OwnerID {  get; set; }
     }
 
-    
+
     public class OrderDetailListModel : ViewOrderDetail
     {
-        public bool CanDelete { get; set; } = false;
+        public bool ShowDelete { get; set; } = false;
 
         public string PickUpDesc { get; set; }
 
@@ -293,16 +315,33 @@ namespace DrinkFood_API.Models
             IsPickup = Entity.IsPickup;
             PickUpDesc = Entity.IsPickup.HasValue && Entity.IsPickup.Value ? "已取餐" : "尚未取餐";
             DetailRemark = Entity.DetailRemark ?? "無";
+            OrderStatus = Entity.OrderStatus;
+            CloseTime = Entity.CloseTime;
+            OwnerID = Entity.OwnerID;
 
             #endregion
         }
 
         public OrderDetailListModel SetButton(Guid AccountID)
         {
-            if (DetailAccountID == AccountID)
+            switch (OrderStatus)
             {
-                CanDelete = true;
+                case "01":
+                    if (DetailAccountID == AccountID && DateTime.Now <= Convert.ToDateTime(CloseTime))
+                    {
+                        ShowDelete = true;
+                    }
+                    if (DetailAccountID == OwnerID)
+                    {
+                        ShowDelete = true;
+                    }
+                    break;
+                case "02":
+                case "98":
+                default:
+                    break;
             }
+
             return this;
         }
     }
@@ -393,9 +432,20 @@ namespace DrinkFood_API.Models
 
     #endregion
 
-
     public class ViewOrderAndDetail
     {
+        public string? BrandOfficialUrl { get; set; }
+
+        public string? BrandLogoUrl { get; set; }
+
+        public string BrandStoreName { get; set; }
+
+        public string StorePhone { get; set; }
+
+        public string StoreAddress { get; set; }
+
+        public Guid OrderID { get; set; }
+
         public string OwnerName { get; set; }
 
         public string OrderNo { get; set; }
@@ -410,18 +460,30 @@ namespace DrinkFood_API.Models
 
         public string CreateTime { get; set; }
 
-        public bool CanAdd { get; set; } = false;
+        public bool ShowAdd { get; set; } = false;
 
-        public bool CanClose { get; set; } = false;
+        public bool ShowClose { get; set; } = false;
 
-        public bool DelayArrival { get; set; } = false;
+        public bool ShowDelayArrival { get; set; } = false;
 
-        public bool DelayClose { get; set; } = false;
+        public bool ShowDelayClose { get; set; } = false;
+
+        public bool ShowDelayNotify {  get; set; } = false;
+
+        public bool ShowDelayArrivalNotify { get; set; } = false;
+
+        public bool ShowFinish { get; set; } = false;
 
         public List<GroupOrderDetailModel> Detail { get; set; }
 
         public ViewOrderAndDetail(OrderListModel Entity, List<GroupOrderDetailModel> EntityData)
         {
+            BrandOfficialUrl = Entity.BrandOfficialUrl;
+            BrandLogoUrl = Entity.BrandLogoUrl;
+            BrandStoreName = Entity.BrandStoreName;
+            StorePhone = Entity.StorePhone;
+            StoreAddress = Entity.StoreAddress;
+            OrderID = Entity.OrderID;
             OrderNo = Entity.OrderNo;
             OrderStatusDesc = Entity.OrderStatusDesc;
             ArrivalTime = Entity.ArrivalTime;
@@ -429,11 +491,34 @@ namespace DrinkFood_API.Models
             OfficeName = Entity.OfficeName;
             OwnerName = Entity.OwnerName;
             CreateTime = Entity.CreateTime;
-            CanAdd = Entity.CanAdd;
-            CanClose = Entity.CanClose;
-            DelayArrival = Entity.DelayArrival;
-            DelayClose = Entity.DelayClose;
+            ShowAdd = Entity.ShowAdd;
+            ShowClose = Entity.ShowClose;
+            ShowDelayArrival = Entity.ShowDelayArrival;
+            ShowDelayClose = Entity.ShowDelayClose;
+            ShowDelayNotify = Entity.ShowDelayNotify;
+            ShowDelayArrivalNotify = Entity.ShowDelayArrivalNotify;
+            ShowFinish = Entity.ShowFinish;
             Detail = EntityData;
         }
     }
+
+    #region 狀態轉換
+
+
+    public class OrderExtension
+    {
+        public string ConvertOrderStatus(string OrderStatus, DateTime CloseTime)
+        {
+            return OrderStatus switch
+            {
+                "99" => "刪除",
+                "98" => "關閉",
+                "01" => DateTime.Now > CloseTime ? "已結單" : "開放點餐",
+                _ => "",
+            };
+        }
+    }
+
+
+    #endregion
 }

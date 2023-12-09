@@ -58,7 +58,9 @@ namespace DrinkFood_API.Repository
                        Quantity = orderDetail.OD_quantity,
                        IsPickup = orderDetail.OD_pickup,
                        DetailRemark = orderDetail.OD_remark,
-
+                       OrderStatus = order.O_status,
+                       CloseTime = order.O_close_time,
+                       OwnerID = order.O_create_account_id
                        //OrderID = orderDetail.OD_order_id,
                        //ArrivalTime = order.O_arrival_time,
                        //OrderStatus = order.O_status,
@@ -160,12 +162,14 @@ namespace DrinkFood_API.Repository
         /// <returns></returns>
         public List<GroupOrderDetailModel> GroupOrderDetailByName(List<OrderDetailListModel> Data)
         {
-            return Data.GroupBy(x =>
-                x.Name
-            ).Select(x =>
+            return Data.GroupBy(x => new {
+                x.Email,
+                x.Name,
+                x.Brief
+            }).Select(x =>
                 new GroupOrderDetailModel
                 {
-                    Name = x.Key,
+                    Name = !string.IsNullOrWhiteSpace(x.Key.Brief) ? x.Key.Brief : x.Key.Name,
                     TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
                     TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
                     OrderDetailList = x.ToList(),

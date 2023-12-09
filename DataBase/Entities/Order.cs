@@ -37,6 +37,7 @@ public partial class Order
 
     /// <summary>
     /// <para>01: 正常 (開放點餐/已結單)</para>
+    /// <para>02: 已完成</para>
     /// <para>98: 關閉</para>
     /// <para>99: 刪除</para>
     /// </summary>
