@@ -51,6 +51,29 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
+        /// 綁定Line
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("BindLine/{AccountID}")]
+        public IActionResult BindLine(Guid AccountID, [FromBody] RequestBindLineModel RequestData)
+        {
+            _accountService.BindLine(AccountID, RequestData);
+            return Json(new ResponseData<object?>(null));
+        }
+
+        /// <summary>
+        /// 解除綁定Line
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpPut("UnbindLine/{AccountID}")]
+        public IActionResult UnbindLine(Guid AccountID)
+        {
+            _accountService.UnbindLine(AccountID);
+            return Json(new ResponseData<object?>(null));
+        }
+
+
+        /// <summary>
         /// 使用者清單
         /// </summary>
         [ProducesResponseType(typeof(List<ViewAccount>), StatusCodes.Status200OK)]

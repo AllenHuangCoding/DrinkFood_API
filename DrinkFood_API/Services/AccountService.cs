@@ -14,6 +14,8 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly AuthService _authService;
 
+        [Inject] private readonly LineService _lineService;
+
         public AccountService(IServiceProvider provider)  : base(provider)
         {
             provider.Inject(this);
@@ -75,7 +77,24 @@ namespace DrinkFood_API.Services
 
         #region Line相關功能
 
+        public void BindLine(Guid AccountID, RequestBindLineModel RequestData)
+        {
+            if (AccountID != RequestData.state)
+            {
+                throw new ApiException("操作使用者與綁定使用者不同", 400);
+            }
 
+            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
+            account.A_line_id = _lineService.GetAccessToken(RequestData.code);
+            _accountRepository.Update(AccountID, account);
+        }   
+
+        public void UnbindLine(Guid AccountID)
+        {
+            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
+            account.A_line_id = null;
+            _accountRepository.Update(AccountID, account);
+        }
 
         #endregion
 

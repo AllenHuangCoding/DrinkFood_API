@@ -117,4 +117,15 @@ namespace DrinkFood_API.Models
 
         public List<OptionsModel> DrinkPayment { get; set; }
     }
+
+    #region
+
+    public class RequestBindLineModel
+    {
+        public string code { get; set; } = null!;
+
+        public Guid state { get; set; }
+    }
+
+    #endregion
 }
