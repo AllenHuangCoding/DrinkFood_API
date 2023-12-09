@@ -84,15 +84,17 @@ namespace DrinkFood_API.Services
                 throw new ApiException("操作使用者與綁定使用者不同", 400);
             }
 
-            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
+            var account = _accountRepository.GetById(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
             account.A_line_id = _lineService.GetAccessToken(RequestData.code);
+            account.A_update = DateTime.Now;
             _accountRepository.Update(AccountID, account);
         }   
 
         public void UnbindLine(Guid AccountID)
         {
-            var account = _accountRepository.Exist(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
+            var account = _accountRepository.GetById(AccountID) ?? throw new ApiException("使用者ID不存在", 400);
             account.A_line_id = null;
+            account.A_update = DateTime.Now;
             _accountRepository.Update(AccountID, account);
         }
 

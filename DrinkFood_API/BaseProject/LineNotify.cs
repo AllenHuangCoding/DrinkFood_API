@@ -14,17 +14,17 @@ namespace CodeShare.Libs.BaseProject
 
         public LineNotify(string client_id, string client_secret, string redirect_uri)
         {
-            if (!string.IsNullOrWhiteSpace(client_id))
+            if (string.IsNullOrWhiteSpace(client_id))
             {
                 throw new ArgumentNullException(nameof(client_id));
             }
 
-            if (!string.IsNullOrWhiteSpace(client_secret))
+            if (string.IsNullOrWhiteSpace(client_secret))
             {
                 throw new ArgumentNullException(nameof(client_secret));
             }
 
-            if (!string.IsNullOrWhiteSpace(redirect_uri))
+            if (string.IsNullOrWhiteSpace(redirect_uri))
             {
                 throw new ArgumentNullException(nameof(redirect_uri));
             }
