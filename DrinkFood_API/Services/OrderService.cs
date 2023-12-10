@@ -4,7 +4,6 @@ using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
 using CodeShare.Libs.BaseProject.Extensions;
-using NPOI.OpenXmlFormats.Dml;
 using DataBase.View;
 
 namespace DrinkFood_API.Services
@@ -19,11 +18,9 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
 
-        [Inject] private readonly OfficeRepository _officeRepository;
+        [Inject] private readonly ViewOfficeRepository _viewOfficeRepository;
 
         [Inject] private readonly CodeTableRepository _codeTableRepository;
-
-        [Inject] private readonly StoreRepository _storeRepository;
 
         [Inject] private readonly ViewStoreRepository _viewStoreRepository;
 
@@ -101,7 +98,7 @@ namespace DrinkFood_API.Services
         {
             return new ResponseOrderDialogOptions
             {
-                Office = _officeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
+                Office = _viewOfficeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
                 Type = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
                 Store = _viewStoreRepository.GetAll().Select(x => new ResponseStoreListModel(x)).Select(x => new OptionsModel(x)).ToList()
             };
@@ -145,12 +142,21 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void JoinOrder(Guid OrderID)
         {
-            _orderDetailRepository.Create(new OrderDetail
+            // 若不存在於訂單明細中則加入空明細
+            ViewOrderDetail? viewOrderDetail = _viewOrderDetailRepository.GetAll().FirstOrDefault(x =>
+                x.OrderID == OrderID &&
+                x.DetailAccountID == _authService.UserID
+            );
+
+            if (viewOrderDetail == null)
             {
-                OD_order_id = OrderID,
-                OD_account_id = _authService.UserID,
-                OD_create_account_id = _authService.UserID,
-            });
+                _orderDetailRepository.Create(new OrderDetail
+                {
+                    OD_order_id = OrderID,
+                    OD_account_id = _authService.UserID,
+                    OD_create_account_id = _authService.UserID,
+                });
+            }
         }
 
         #endregion
@@ -229,7 +235,7 @@ namespace DrinkFood_API.Services
         {
             // 訂單明細原始資料
             List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
-                x.DetailAccountID == AccountID
+                x.DetailAccountID == AccountID && x.DrinkFoodID.HasValue
             ).ToList();
 
             // 訂單原始資料

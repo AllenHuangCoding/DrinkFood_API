@@ -222,7 +222,7 @@ namespace DrinkFood_API.Models
                     {
                         ShowDelete = true;
                     }
-                    if (DetailAccountID == OwnerID)
+                    if (OwnerID == AccountID)
                     {
                         ShowDelete = true;
                     }

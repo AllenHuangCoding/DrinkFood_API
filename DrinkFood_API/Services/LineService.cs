@@ -10,15 +10,9 @@ namespace DrinkFood_API.Services
     {
         private readonly LineNotify line;
 
-        [Inject] private readonly AccountRepository _accountRepository;
-
         [Inject] private readonly ViewAccountRepository _viewAccountRepository;
 
         [Inject] private readonly OrderRepository _orderRepository;
-
-        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
-
-        [Inject] private readonly OrderDetailRepository _orderDetailRepository;
 
         [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
 

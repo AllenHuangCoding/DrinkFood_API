@@ -16,3 +16,5 @@ account.A_is_admin AS IsAdmin
 FROM Account 
 LEFT JOIN CodeTable AS drinkPayment ON A_default_drink_payment = drinkPayment.CT_id
 LEFT JOIN CodeTable AS lunchPayment ON A_default_lunch_payment = lunchPayment.CT_id
+WHERE A_status != '99'
+
