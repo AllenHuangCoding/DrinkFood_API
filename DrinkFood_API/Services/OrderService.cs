@@ -42,13 +42,13 @@ namespace DrinkFood_API.Services
         public List<OrderListModel> GetOrderList()
         {
             // 公團 (從資料庫搜尋)
-            List<ViewOrder> publicOrder = _viewOrderRepository.GetAll().Where(x => 
+            List<ViewOrder> publicOrder = _viewOrderRepository.FindAll(x => 
                 x.IsPublic
             ).ToList();
 
             // 私團 (從已加入的私團明細往回推私團資訊)
-            List<ViewOrderDetail> privateOrderDetail = _viewOrderDetailRepository.GetAll().Where(x => x.DetailAccountID == _authService.UserID).ToList();
-            List<ViewOrder> privateOrder = _viewOrderRepository.GetAll().Where(x =>
+            List<ViewOrderDetail> privateOrderDetail = _viewOrderDetailRepository.FindAll(x => x.DetailAccountID == _authService.UserID).ToList();
+            List<ViewOrder> privateOrder = _viewOrderRepository.FindAll(x =>
                 !x.IsPublic
             ).AsEnumerable().Where(x =>
                 privateOrderDetail.SelectProperty(y => y.OrderID).Contains(x.OrderID)
@@ -71,10 +71,10 @@ namespace DrinkFood_API.Services
         public ViewOrderAndDetail GetOrder(Guid OrderID)
         {
             // 訂單原始資料
-            ViewOrder order = _viewOrderRepository.GetAll().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
+            ViewOrder order = _viewOrderRepository.FindAll(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
 
             // 訂單明細原始資料
-            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
+            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderID == order.OrderID
             ).ToList();
 
@@ -234,13 +234,13 @@ namespace DrinkFood_API.Services
         public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
             // 訂單明細原始資料
-            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
+            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.DetailAccountID == AccountID && x.DrinkFoodID.HasValue
             ).ToList();
 
             // 訂單原始資料
             List<Guid> ids = orderDetail.SelectProperty(y => y.OrderID);
-            List<ViewOrder> order = _viewOrderRepository.GetAll().Where(x =>
+            List<ViewOrder> order = _viewOrderRepository.FindAll(x =>
                 ids.Contains(x.OrderID)
             ).AsEnumerable().ToList();
 

@@ -28,7 +28,7 @@ namespace DrinkFood_API.Services
             var response = _storeRepository.GetStoreList(RequestData);
 
             var storeIDs = response.Select(x => x.StoreID).ToList();
-            var storeOrder = _viewOrderRepository.GetAll().Where(x => storeIDs.Contains(x.StoreID)).ToList();
+            var storeOrder = _viewOrderRepository.FindAll(x => storeIDs.Contains(x.StoreID)).ToList();
 
             foreach (var item in response)
             {

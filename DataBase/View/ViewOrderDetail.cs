@@ -55,8 +55,12 @@ namespace DataBase.View
         // 用以判斷刪除按鈕的訂單欄位
         public string OrderStatus { get; set; } = null!;
 
+        public DateTime ArrivalTime { get; set; }
+
         public DateTime CloseTime { get; set; }
 
         public Guid OwnerID { get; set; }
+
+        public string BrandName { get; set; } = null!;
     }
 }

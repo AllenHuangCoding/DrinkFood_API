@@ -22,8 +22,10 @@
     OD_pickup AS IsPickup,
     OD_remark AS DetailRemark,
     [order].O_status AS OrderStatus,
+    [order].O_arrival_time AS ArrivalTime,
     [order].O_close_time AS CloseTime,
-    [order].O_create_account_id AS OwnerID
+    [order].O_create_account_id AS OwnerID,
+	brand.B_name AS BrandName
 FROM OrderDetail
 JOIN [Order] [order] ON OD_order_id = [order].O_id
 JOIN Office office ON [order].O_office_id = office.O_id

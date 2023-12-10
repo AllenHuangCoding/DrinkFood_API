@@ -134,14 +134,14 @@ namespace DrinkFood_API.Services
         private List<ViewAccount> GetOrderNotifyAccount(Guid OrderID)
         {
             // 取得訂單明細中有點餐的人
-            List<ViewOrderDetail> viewOrderDetail = _viewOrderDetailRepository.GetAll().Where(x => 
+            List<ViewOrderDetail> viewOrderDetail = _viewOrderDetailRepository.FindAll(x => 
                 x.OrderID == OrderID && x.DrinkFoodID.HasValue
             ).ToList();
 
             // 轉換出使用者ID
             List<Guid> listAccountID = viewOrderDetail.SelectProperty(y => y.DetailAccountID);
 
-            return _viewAccountRepository.GetAll().Where(x =>
+            return _viewAccountRepository.FindAll(x =>
                 !string.IsNullOrWhiteSpace(x.LineID) && x.LineNotify &&
                 listAccountID.Contains(x.AccountID)
             ).ToList();
@@ -153,7 +153,7 @@ namespace DrinkFood_API.Services
         /// <returns></returns>
         private List<ViewAccount> GetNotifyAccount()
         {
-            return _viewAccountRepository.GetAll().Where(x =>
+            return _viewAccountRepository.FindAll(x =>
                 !string.IsNullOrWhiteSpace(x.LineID) && x.LineNotify
             ).ToList();
         }

@@ -33,7 +33,7 @@ namespace DrinkFood_API.Repository
 
         public List<ViewMenu> GetBrandMenuList(Guid BrandID)
         {
-            var brandMenu = _viewMenuRepository.GetAll().Where(x =>
+            var brandMenu = _viewMenuRepository.FindAll(x =>
                 x.BrandID == BrandID
             ).OrderByDescending(x =>
                 x.MenuCreate

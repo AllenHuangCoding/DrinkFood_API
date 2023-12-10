@@ -31,7 +31,7 @@ namespace DrinkFood_API.Repository
         public List<ViewDrinkFood> GetDrinkFoodList(Guid StoreID)
         {
             var menu = _menuRepository.GetStoreMenu(StoreID)!;
-            return _viewDrinkFoodRepository.GetAll().Where(x => 
+            return _viewDrinkFoodRepository.FindAll(x => 
                 x.MenuID == menu.MenuID
             ).OrderBy(x => x.DrinkFoodTypeOrder).ThenBy(x => x.DrinkFoodName).ToList();
         }

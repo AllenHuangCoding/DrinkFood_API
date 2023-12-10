@@ -1,8 +1,6 @@
 ﻿using CodeShare.Libs.BaseProject;
-using DrinkFood_API.Model;
 using DrinkFood_API.Models;
 using DrinkFood_API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DrinkFood_API.Controllers

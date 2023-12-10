@@ -58,7 +58,7 @@ namespace DrinkFood_API.Repository
         /// <exception cref="ApiException"></exception>
         public void DeleteOrderDetail(Guid OrderDetailID)
         {
-            _ = _viewOrderDetailRepository.GetAll().Where(x =>
+            _ = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 
@@ -156,7 +156,7 @@ namespace DrinkFood_API.Repository
 
         public void CheckMyOrderDetail(Guid AccountID, Guid OrderDetailID)
         {
-            var orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 

@@ -23,13 +23,13 @@ namespace DrinkFood_API.Services
 
         public FileResult ExportOrderDetailHistory(Guid AccountID)
         {
-            var orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.DetailAccountID == AccountID
             ).ToList();
 
             var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
 
-            var order = _viewOrderRepository.GetAll().Where(x => orderIDs.Contains(x.OrderID)).ToList();
+            var order = _viewOrderRepository.FindAll(x => orderIDs.Contains(x.OrderID)).ToList();
 
             var history = orderDetail.Select(x =>
                 new DetailHistoryExcelModel(
@@ -51,7 +51,7 @@ namespace DrinkFood_API.Services
             ).ToList();
 
             var orderIDs = order.Select(x => x.O_id).ToList();
-            var orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 orderIDs.Contains(x.OrderID)
             ).ToList();
 
