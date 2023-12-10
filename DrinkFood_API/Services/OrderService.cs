@@ -4,6 +4,7 @@ using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
 using CodeShare.Libs.BaseProject.Extensions;
+using NPOI.OpenXmlFormats.Dml;
 
 namespace DrinkFood_API.Services
 {
@@ -19,7 +20,9 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly StoreRepository _storeRepository;
 
-        [Inject] private readonly AuthService _authService;
+        [Inject] private readonly IAuthService _authService;
+
+        [Inject] private readonly LineService _lineService;
 
         public OrderService(IServiceProvider provider) : base(provider)
         {
@@ -107,7 +110,7 @@ namespace DrinkFood_API.Services
         /// <param name="RequestData"></param>
         public void PostOrder(RequestPostOrderModel RequestData)
         {
-            _orderRepository.Create(new Order
+            Order createOrder = _orderRepository.Create(new Order
             {
                 O_office_id = RequestData.OfficeID,
                 O_create_account_id = RequestData.CreateAccountID,
@@ -120,7 +123,8 @@ namespace DrinkFood_API.Services
                 O_is_public = RequestData.IsPublic,
             });
 
-            // 公團的 Line Notify / Email 開團通知
+            // 開團的Line Notify通知
+            _lineService.CreateOrderNotify(createOrder.O_id);
 
             // (HangFire) 設定Line Notify / Message結單前提醒
         }
@@ -190,7 +194,7 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void DelayNotify(Guid OrderID)
         {
-
+            _lineService.DelayNotify(OrderID);
         }
 
         /// <summary>
@@ -199,9 +203,8 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void DelayArrivalNotify(Guid OrderID)
         {
-
+            _lineService.DelayArrivalNotify(OrderID);
         }
-
 
         #endregion
 
@@ -301,6 +304,17 @@ namespace DrinkFood_API.Services
         private static string CreateOrderNo()
         {
             return string.Format("O{0}{1:0000}", DateTime.Now.ToString("yyyyMMdd"), new Random().Next(1, 9999));
+        }
+
+        #endregion
+
+        #region Line測試用方法
+
+        public void TestOrderLine(Guid OrderID)
+        {
+            _lineService.CreateOrderNotify(OrderID);
+            _lineService.DelayNotify(OrderID);
+            _lineService.DelayArrivalNotify(OrderID);
         }
 
         #endregion

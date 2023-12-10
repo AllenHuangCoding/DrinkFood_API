@@ -15,7 +15,7 @@ namespace CodeShare.Libs.BaseProject
     /// <summary>
     /// 檢查Token資料庫邏輯的Interface
     /// </summary>
-    public interface ITokenLogic
+    public interface IAuthService
     {
         /// <summary>
         /// 使用者ID
@@ -34,6 +34,11 @@ namespace CodeShare.Libs.BaseProject
         /// <param name="payload"></param>
         /// <returns></returns>
         public bool CheckTokenLogic(string token, Payload payload);
+
+        /// <summary>
+        /// 檢查管理員身分 (非管理員噴出ApiException)
+        /// </summary>
+        public void CheckAdmin();
     }
 
     /// <summary>

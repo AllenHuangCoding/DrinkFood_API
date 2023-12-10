@@ -59,6 +59,15 @@ namespace DrinkFood_API.Repository
                    };
         }
 
+        public OrderListModel GetOrderListData(Guid OrderID)
+        {
+            ViewOrder? viewOrder = GetViewOrder().Where(x =>
+                x.OrderID == OrderID
+            ).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
+
+            return new OrderListModel(viewOrder);
+        }
+
         #endregion
 
         #region 更改訂單欄位 (用餐時間/結單時間)

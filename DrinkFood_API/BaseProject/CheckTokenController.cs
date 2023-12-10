@@ -6,7 +6,7 @@ namespace CodeShare.Libs.BaseProject
     {
         private readonly TokenManager _tokenManager;
 
-        [Inject] protected readonly ITokenLogic _userInfo;
+        [Inject] protected readonly IAuthService _userInfo;
 
         /// <summary>
         /// 需登入的API呼叫使用

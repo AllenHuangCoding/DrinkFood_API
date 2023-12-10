@@ -23,6 +23,8 @@ public partial class Account
 
     public string? A_line_id { get; set; }
 
+    public bool A_line_notify { get; set; }
+
     public bool A_lunch_notify { get; set; }
 
     public bool A_drink_notify { get; set; }
@@ -43,6 +45,7 @@ public partial class Account
 
     public Account()
     {
+        A_line_notify = false;
         A_lunch_notify = false;
         A_drink_notify = false;
         A_is_admin = false; 

@@ -202,5 +202,16 @@ namespace DrinkFood_API.Controllers
             _orderService.PutPickup(OrderDetailID);
             return Json(new ResponseData<object?>(null, 1));
         }
+
+        /// <summary>
+        /// Line測試訂單通知方法
+        /// </summary>
+        [ProducesResponseType(typeof(ResponseModel), StatusCodes.Status200OK)]
+        [HttpGet("TestOrderLine/{OrderID}")]
+        public IActionResult TestOrderLine(Guid OrderID)
+        {
+            _orderService.TestOrderLine(OrderID);
+            return Json(new ResponseData<object?>(null, 1));
+        }
     }
 }

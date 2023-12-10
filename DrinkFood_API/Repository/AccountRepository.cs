@@ -32,6 +32,7 @@ namespace DrinkFood_API.Repository
                        Brief = account.A_brief,
                        Email = account.A_email,
                        LineID = account.A_line_id,
+                       LineNotify = account.A_line_notify,
                        LunchNotify = account.A_lunch_notify,
                        DrinkNotify = account.A_drink_notify,
                        CloseNotify = account.A_close_notify,

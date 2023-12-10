@@ -50,6 +50,8 @@ namespace DrinkFood_API.Models
 
         public string? LineID { get; set; }
 
+        public bool LineNotify { get; set; }
+
         public bool LunchNotify { get; set; }
 
         public bool DrinkNotify { get; set; }
