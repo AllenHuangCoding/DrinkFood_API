@@ -3,14 +3,25 @@ using DataBase.Entities;
 using DataBase;
 using DrinkFood_API.Models;
 using CodeShare.Libs.BaseProject;
+using DataBase.View;
 
 namespace DrinkFood_API.Repository
 {
+    public class ViewMenuRepository : BaseView<EFContext, ViewMenu>
+    {
+        public ViewMenuRepository(IServiceProvider provider) : base(provider)
+        {
+            provider.Inject(this);
+        }
+    }
+
     public class MenuRepository : BaseTable<EFContext, Menu>
     {
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
         [Inject] private readonly StoreRepository _storeRepository;
+
+        [Inject] private readonly ViewMenuRepository _viewMenuRepository;
 
         /// <summary>
         /// 建構元
@@ -22,7 +33,7 @@ namespace DrinkFood_API.Repository
 
         public List<ViewMenu> GetBrandMenuList(Guid BrandID)
         {
-            var brandMenu = GetViewMenu().Where(x =>
+            var brandMenu = _viewMenuRepository.GetAll().Where(x =>
                 x.BrandID == BrandID
             ).OrderByDescending(x =>
                 x.MenuCreate
@@ -39,28 +50,11 @@ namespace DrinkFood_API.Repository
         {
             var store = _storeRepository.FindOne(x => x.S_id == StoreID) ?? throw new ApiException("商店ID不存在", 400);
             
-            var menu = GetViewMenu().Where(x =>
+            var menu = _viewMenuRepository.GetAll().FirstOrDefault(x =>
                 x.BrandID == store.S_brand_id && x.MenuAreaID == store.S_menu_area_id
-            ).FirstOrDefault() ?? throw new ApiException("店家菜單不存在", 400);
+            ) ?? throw new ApiException("店家菜單不存在", 400);
 
             return menu;
-        }
-
-        public IQueryable<ViewMenu> GetViewMenu()
-        {
-            return from menu in _readDBContext.Menu
-                   join brand in _readDBContext.Brand on menu.M_brand_id equals brand.B_id
-                   join areaCodeTable in _readDBContext.CodeTable.Where(x => x.CT_type == "MenuArea") on menu.M_area_id equals areaCodeTable.CT_id
-                   where menu.M_status != "99" && brand.B_status != "99"
-                   select new ViewMenu
-                   {
-                       MenuID = menu.M_id,
-                       MenuAreaID = menu.M_area_id,
-                       MenuAreaDesc = areaCodeTable.CT_desc,
-                       MenuCreate = menu.M_create,
-                       BrandID = brand.B_id,
-                       BrandName = brand.B_name,
-                   };
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CodeShare.Libs.BaseProject;
 using CodeShare.Libs.BaseProject.Extensions;
+using DataBase.View;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 
@@ -11,9 +12,15 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly AccountRepository _accountRepository;
 
+        [Inject] private readonly ViewAccountRepository _viewAccountRepository;
+
         [Inject] private readonly OrderRepository _orderRepository;
 
+        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
+
         [Inject] private readonly OrderDetailRepository _orderDetailRepository;
+
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
 
         public LineService(IServiceProvider provider) : base(provider)
         {
@@ -133,14 +140,14 @@ namespace DrinkFood_API.Services
         private List<ViewAccount> GetOrderNotifyAccount(Guid OrderID)
         {
             // 取得訂單明細中有點餐的人
-            List<ViewOrderDetail> viewOrderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x => 
+            List<ViewOrderDetail> viewOrderDetail = _viewOrderDetailRepository.GetAll().Where(x => 
                 x.OrderID == OrderID && x.DrinkFoodID.HasValue
             ).ToList();
 
             // 轉換出使用者ID
             List<Guid> listAccountID = viewOrderDetail.SelectProperty(y => y.DetailAccountID);
 
-            return _accountRepository.GetViewAccount().Where(x =>
+            return _viewAccountRepository.GetAll().Where(x =>
                 !string.IsNullOrWhiteSpace(x.LineID) && x.LineNotify &&
                 listAccountID.Contains(x.AccountID)
             ).ToList();
@@ -152,7 +159,7 @@ namespace DrinkFood_API.Services
         /// <returns></returns>
         private List<ViewAccount> GetNotifyAccount()
         {
-            return _accountRepository.GetViewAccount().Where(x =>
+            return _viewAccountRepository.GetAll().Where(x =>
                 !string.IsNullOrWhiteSpace(x.LineID) && x.LineNotify
             ).ToList();
         }

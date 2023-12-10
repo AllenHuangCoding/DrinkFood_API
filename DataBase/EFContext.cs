@@ -1,6 +1,7 @@
 ﻿using DataBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using CodeShare.Libs.GenericEntityFramework;
+using DataBase.View;
 
 namespace DataBase
 {
@@ -39,5 +40,16 @@ namespace DataBase
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
 
         public virtual DbSet<Store> Store { get; set; }
+
+        #region View
+        public virtual DbSet<ViewAccount> ViewAccount { get; set; }
+        public virtual DbSet<ViewDrinkFood> ViewDrinkFood { get; set; }
+        public virtual DbSet<ViewMenu> ViewMenu { get; set; }
+        public virtual DbSet<ViewOffice> ViewOffice { get; set; }
+        public virtual DbSet<ViewOrder> ViewOrder { get; set; }
+        public virtual DbSet<ViewOrderDetail> ViewOrderDetail { get; set; }
+        public virtual DbSet<ViewStore> ViewStore { get; set; }
+
+        #endregion
     }
 }

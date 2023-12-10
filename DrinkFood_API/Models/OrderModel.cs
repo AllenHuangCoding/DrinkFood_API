@@ -1,8 +1,6 @@
 ﻿using CodeShare.Libs.BaseProject.Extensions;
-using DataBase.Entities;
+using DataBase.View;
 using DrinkFood_API.Utility;
-using Microsoft.Identity.Client;
-using Org.BouncyCastle.Bcpg;
 
 namespace DrinkFood_API.Models
 {
@@ -22,21 +20,21 @@ namespace DrinkFood_API.Models
 
     public class RequestPostOrderModel
     {
-        public required Guid OfficeID { get; set; }
+        public Guid OfficeID { get; set; }
 
-        public required Guid CreateAccountID { get; set; }
+        public Guid CreateAccountID { get; set; }
 
-        public required Guid StoreID  { get; set; }
+        public Guid StoreID  { get; set; }
 
-        public required Guid TypeID { get; set; }
+        public Guid TypeID { get; set; }
 
-        public required DateTime ArrivalTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
 
-        public required DateTime OpenTime { get; set; }
+        public DateTime OpenTime { get; set; }
 
-        public required DateTime CloseTime { get; set; }
+        public DateTime CloseTime { get; set; }
 
-        public required bool IsPublic { get; set; }
+        public bool? IsPublic { get; set; }
 
     }
 
@@ -59,62 +57,7 @@ namespace DrinkFood_API.Models
         public DateTime CloseTime { get; set; }
     }
 
-    public class ViewOrder
-    {
-        public Guid OrderID { get; set; }
-
-        public Guid OwnerID { get; set; }
-
-        public string OwnerName { get; set; } = null!;
-
-        public string? OwnerBrief {  get; set; }
-
-        public string OrderNo { get; set; } = null!;
-
-        public Guid Type { get; set; }
-
-        public string TypeDesc { get; set; } = null!;
-
-        public bool IsPublic { get; set; }
-
-        public string? ShareUrl { get; set; }
-
-        public DateTime ArrivalTime { get; set; }
-
-        public DateTime OpenTime { get; set; }
-
-        public DateTime CloseTime { get; set; }
-
-        public DateTime? CloseRemindTime { get; set; }
-
-        public string? Remark { get; set; }
-
-        public string OrderStatus { get; set; } = null!;
-
-        public string OrderStatusDesc { get; set; } = null!;
-
-        public DateTime CreateTime { get; set; }
-
-        public Guid OfficeID { get; set; }
-
-        public string OfficeName { get; set; } = null!;
-
-        public Guid BrandID { get; set; }
-
-        public string BrandName { get; set; } = null!;
-
-        public string? BrandLogoUrl { get; set; }
-
-        public string? BrandOfficialUrl { get; set; }
-
-        public Guid StoreID { get; set; }
-
-        public string StoreName { get; set; } = null!;
-
-        public string StorePhone { get; set; } = null!;
-
-        public string StoreAddress { get; set; } = null!;
-    }
+    
 
     public class OrderListModel : ViewOrder
     {
@@ -227,61 +170,7 @@ namespace DrinkFood_API.Models
 
     #region 訂單明細
 
-    public class ViewOrderDetail
-    {
-        public Guid OrderDetailID { get; set; }
-
-        public Guid OrderID {  get; set; }
-
-        public Guid? DrinkFoodID { get; set; }
-
-        public string DrinkFoodName { get; set; } = null!;
-
-        public int DrinkFoodPrice { get; set; }
-
-        public string? DrinkFoodRemark { get; set; }
-
-        public Guid? SugarID { get; set; }
-
-        public string SugarDesc { get; set; } = null!;
-
-        public Guid? IceID { get; set; }
-
-        public string IceDesc { get; set; } = null!;
-
-        public Guid? SizeID { get; set; }
-
-        public string SizeDesc { get; set; } = null!;
-
-        public Guid DetailAccountID { get; set; }
-
-        public string Name { get; set; } = null!;
-
-        public string? Brief { get; set; }
-
-        public string Email { get; set; } = null!;
-
-        public Guid? PaymentID { get; set; }
-
-        public string? PaymentDesc { get; set; }
-
-        public DateTime? PaymentDatetime { get; set; }
-
-        public bool? PaymentArrived { get; set; }
-
-        public int? Quantity { get; set; }
-
-        public bool? IsPickup { get; set; }
-
-        public string? DetailRemark { get; set; }
-
-        // 用以判斷刪除按鈕的訂單欄位
-        public string OrderStatus {  get; set; } = null!;
-
-        public DateTime CloseTime {  get; set; }
-
-        public Guid OwnerID {  get; set; }
-    }
+    
 
 
     public class OrderDetailListModel : ViewOrderDetail
@@ -313,7 +202,6 @@ namespace DrinkFood_API.Models
             PaymentID = Entity.PaymentID;
             PaymentDesc = Entity.PaymentDesc ?? "尚未付款";
             PaymentDatetime = Entity.PaymentDatetime;
-            PaymentArrived = Entity.PaymentArrived;
             Quantity = Entity.Quantity;
             IsPickup = Entity.IsPickup;
             PickUpDesc = Entity.IsPickup.HasValue && Entity.IsPickup.Value ? "已取餐" : "尚未取餐";
@@ -381,7 +269,7 @@ namespace DrinkFood_API.Models
             BrandName = listModel.BrandName;
             BrandStoreName = listModel.BrandStoreName;
             DrinkFoodName = $"{OrderDetail.DrinkFoodName} / {OrderDetail.SugarDesc} / {OrderDetail.IceDesc}";
-            DrinkFoodPrice = OrderDetail.DrinkFoodPrice;
+            DrinkFoodPrice = OrderDetail.DrinkFoodPrice.HasValue ? OrderDetail.DrinkFoodPrice.Value : 0;
             DetailRemark = OrderDetail.DetailRemark;
             PaymentDesc = OrderDetail.PaymentDesc;
             Quantity = OrderDetail.Quantity;
@@ -523,6 +411,7 @@ namespace DrinkFood_API.Models
             {
                 "99" => "刪除",
                 "98" => "關閉",
+                "02" => "已完成",
                 "01" => DateTime.Now > CloseTime ? "已結單" : "開放點餐",
                 _ => "",
             };

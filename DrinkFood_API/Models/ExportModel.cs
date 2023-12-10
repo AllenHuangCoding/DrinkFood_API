@@ -1,4 +1,5 @@
 ﻿using DataBase.Entities;
+using DataBase.View;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DrinkFood_API.Models
@@ -54,7 +55,7 @@ namespace DrinkFood_API.Models
             DrinkFoodName = OrderDetail.DrinkFoodName;
             SugarDesc = OrderDetail.SugarDesc;
             IceDesc = OrderDetail.IceDesc;
-            DrinkFoodPrice = OrderDetail.DrinkFoodPrice;
+            DrinkFoodPrice = OrderDetail.DrinkFoodPrice.HasValue ? OrderDetail.DrinkFoodPrice.Value : 0;
             Quantity = OrderDetail.Quantity;
             DetailRemark = OrderDetail.DetailRemark;
             PaymentDesc = OrderDetail.PaymentDesc;

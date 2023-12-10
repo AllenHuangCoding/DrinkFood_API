@@ -3,12 +3,15 @@ using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
+using DataBase.View;
 
 namespace DrinkFood_API.Services
 {
     public class AccountService : BaseService
     {
         [Inject] private readonly AccountRepository _accountRepository;
+
+        [Inject] private readonly ViewAccountRepository _viewAccountRepository;
 
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
@@ -30,7 +33,7 @@ namespace DrinkFood_API.Services
         /// <exception cref="ApiException"></exception>
         public ViewAccount GetProfile()
         {
-            return _accountRepository.GetViewAccount().Where(x => x.AccountID == _authService.UserID).FirstOrDefault() ?? throw new ApiException("使用者ID不存在", 400);
+            return _viewAccountRepository.GetAll().Where(x => x.AccountID == _authService.UserID).FirstOrDefault() ?? throw new ApiException("使用者ID不存在", 400);
         }
 
         /// <summary>
@@ -109,7 +112,7 @@ namespace DrinkFood_API.Services
         public List<ViewAccount> GetAccountList()
         {
             _authService.CheckAdmin();
-            return _accountRepository.GetViewAccount().ToList();
+            return _viewAccountRepository.GetAll().ToList();
         }
 
         /// <summary>

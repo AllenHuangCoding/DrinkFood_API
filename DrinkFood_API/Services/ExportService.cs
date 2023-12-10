@@ -12,6 +12,10 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly OrderRepository _orderRepository;
 
+        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
+
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
+
         public ExportService(IServiceProvider provider) : base(provider)
         {
             provider.Inject(this);
@@ -19,13 +23,13 @@ namespace DrinkFood_API.Services
 
         public FileResult ExportOrderDetailHistory(Guid AccountID)
         {
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
                 x.DetailAccountID == AccountID
             ).ToList();
 
             var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
 
-            var order = _orderRepository.GetViewOrder().Where(x => orderIDs.Contains(x.OrderID)).ToList();
+            var order = _viewOrderRepository.GetAll().Where(x => orderIDs.Contains(x.OrderID)).ToList();
 
             var history = orderDetail.Select(x =>
                 new DetailHistoryExcelModel(
@@ -47,7 +51,7 @@ namespace DrinkFood_API.Services
             ).ToList();
 
             var orderIDs = order.Select(x => x.O_id).ToList();
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.GetAll().Where(x =>
                 orderIDs.Contains(x.OrderID)
             ).ToList();
 

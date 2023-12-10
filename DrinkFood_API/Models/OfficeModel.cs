@@ -1,4 +1,6 @@
-﻿namespace DrinkFood_API.Models
+﻿using DataBase.View;
+
+namespace DrinkFood_API.Models
 {
     public class RequestOfficeListModel
     {
@@ -80,16 +82,5 @@
         public string A_email { get; set; } = null!;
     }
 
-    public class ViewOffice
-    {
-        public Guid O_id { get; set; }
-
-        public string O_name { get; set; } = null!;
-
-        public string O_Address { get; set; } = null!;
-
-        public Guid O_company_id { get; set; }
-
-        public string C_name { get; set; } = null!;
-    }
+    
 }
