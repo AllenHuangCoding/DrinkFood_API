@@ -3,6 +3,7 @@ using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
+using DataBase.View;
 
 namespace DrinkFood_API.Services
 {
@@ -10,9 +11,15 @@ namespace DrinkFood_API.Services
     {
         [Inject] private readonly AccountRepository _accountRepository;
 
+        [Inject] private readonly ViewAccountRepository _viewAccountRepository;
+
+        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
+
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
+
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
-        [Inject] private readonly AuthService _authService;
+        [Inject] private readonly IAuthService _authService;
 
         [Inject] private readonly LineService _lineService;
 
@@ -30,7 +37,7 @@ namespace DrinkFood_API.Services
         /// <exception cref="ApiException"></exception>
         public ViewAccount GetProfile()
         {
-            return _accountRepository.GetViewAccount().Where(x => x.AccountID == _authService.UserID).FirstOrDefault() ?? throw new ApiException("使用者ID不存在", 400);
+            return _viewAccountRepository.FindAll(x => x.AccountID == _authService.UserID).FirstOrDefault() ?? throw new ApiException("使用者ID不存在", 400);
         }
 
         /// <summary>
@@ -108,11 +115,8 @@ namespace DrinkFood_API.Services
         /// <returns></returns>
         public List<ViewAccount> GetAccountList()
         {
-            if (_authService.IsAdmin)
-            {
-                return _accountRepository.GetViewAccount().ToList();
-            }
-            return new List<ViewAccount>();
+            _authService.CheckAdmin();
+            return _viewAccountRepository.GetAll().ToList();
         }
 
         /// <summary>
@@ -122,25 +126,20 @@ namespace DrinkFood_API.Services
         /// <exception cref="ApiException"></exception>
         public void CreateAccount(RequestCreateAccountModel RequestData)
         {
-            if (_authService.IsAdmin)
+            _authService.CheckAdmin();
+
+            _accountRepository.Create(new Account
             {
-                _accountRepository.Create(new Account
-                {
-                    A_name = RequestData.Name,
-                    A_brief = RequestData.Brief,
-                    A_email = RequestData.Email,
-                    A_password = RequestData.Email,
-                    A_lunch_notify = RequestData.LunchNotify,
-                    A_drink_notify = RequestData.DrinkNotify,
-                    A_close_notify = RequestData.CloseNotify,
-                    A_default_lunch_payment = RequestData.LunchDefaultPayment,
-                    A_default_drink_payment = RequestData.DrinkDefaultPayment,
-                });
-            }
-            else
-            {
-                throw new ApiException("非管理員權限", 400);
-            }
+                A_name = RequestData.Name,
+                A_brief = RequestData.Brief,
+                A_email = RequestData.Email,
+                A_password = RequestData.Email,
+                A_lunch_notify = RequestData.LunchNotify,
+                A_drink_notify = RequestData.DrinkNotify,
+                A_close_notify = RequestData.CloseNotify,
+                A_default_lunch_payment = RequestData.LunchDefaultPayment,
+                A_default_drink_payment = RequestData.DrinkDefaultPayment,
+            });
         }
 
         #endregion

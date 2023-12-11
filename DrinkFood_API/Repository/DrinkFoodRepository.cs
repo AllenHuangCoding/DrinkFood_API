@@ -2,12 +2,23 @@
 using DataBase.Entities;
 using DataBase;
 using DrinkFood_API.Models;
+using DataBase.View;
 
 namespace DrinkFood_API.Repository
 {
+    public class ViewDrinkFoodRepository : BaseView<EFContext, ViewDrinkFood> 
+    { 
+        public ViewDrinkFoodRepository(IServiceProvider provider) : base(provider)
+        {
+            provider.Inject(this);
+        }
+    }
+
     public class DrinkFoodRepository : BaseTable<EFContext, DrinkFood>
     {
         [Inject] private readonly MenuRepository _menuRepository;
+
+        [Inject] private readonly ViewDrinkFoodRepository _viewDrinkFoodRepository;
 
         /// <summary>
         /// 建構元
@@ -17,15 +28,15 @@ namespace DrinkFood_API.Repository
             provider.Inject(this);
         }
 
-        public List<ViewDrinkFoodModel> GetDrinkFoodList(Guid StoreID)
+        public List<ViewDrinkFood> GetDrinkFoodList(Guid StoreID)
         {
             var menu = _menuRepository.GetStoreMenu(StoreID)!;
-            return GetViewDrinkFood().Where(x => 
+            return _viewDrinkFoodRepository.FindAll(x => 
                 x.MenuID == menu.MenuID
             ).OrderBy(x => x.DrinkFoodTypeOrder).ThenBy(x => x.DrinkFoodName).ToList();
         }
 
-        public List<GroupDrinkFoodModel> GroupDrinkFoodByType(List<ViewDrinkFoodModel> Data)
+        public List<GroupDrinkFoodModel> GroupDrinkFoodByType(List<ViewDrinkFood> Data)
         {
             return Data.GroupBy(x => new {
                 x.DrinkFoodTypeID,
@@ -38,24 +49,6 @@ namespace DrinkFood_API.Repository
                     DrinkFoodList = x.OrderBy(x => x.DrinkFoodTypeOrder).ToList()
                 }
             ).ToList();
-        }
-
-        public IQueryable<ViewDrinkFoodModel> GetViewDrinkFood()
-        {
-            return from drinkFood in _readDBContext.DrinkFood
-                   join codeTable in _readDBContext.CodeTable.Where(x => x.CT_type == "DrinkFoodType") on drinkFood.DF_type equals codeTable.CT_id
-                   where drinkFood.DF_status != "99"
-                   select new ViewDrinkFoodModel
-                   {
-                       DrinkFoodID = drinkFood.DF_id,
-                       MenuID = drinkFood.DF_menu_id,
-                       DrinkFoodName = drinkFood.DF_name,
-                       DrinkFoodTypeOrder = codeTable.CT_order,
-                       DrinkFoodTypeID = codeTable.CT_id,
-                       DrinkFoodTypeDesc = codeTable.CT_desc,
-                       DrinkFoodPrice = drinkFood.DF_price,
-                       DrinkFoodRemark = drinkFood.DF_remark ?? "",
-                   };
         }
     }
 }

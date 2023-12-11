@@ -3,12 +3,25 @@ using DataBase.Entities;
 using DataBase;
 using DrinkFood_API.Models;
 using CodeShare.Libs.BaseProject;
+using DataBase.View;
 
 namespace DrinkFood_API.Repository
 {
+    public class ViewOrderDetailRepository : BaseView<EFContext, ViewOrderDetail>
+    {
+        public ViewOrderDetailRepository(IServiceProvider provider) : base(provider)
+        {
+            provider.Inject(this);
+        }
+    }
+
     public class OrderDetailRepository : BaseTable<EFContext, OrderDetail>
     {
         [Inject] private readonly OrderRepository _orderRepository;
+
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
+
+
 
         /// <summary>
         /// 建構元 
@@ -17,65 +30,6 @@ namespace DrinkFood_API.Repository
         {
             provider.Inject(this);
         }
-
-        #region 訂單明細查詢 (View)
-
-        public IQueryable<ViewOrderDetail> GetViewOrderDetail()
-        {
-            return from orderDetail in _readDBContext.OrderDetail
-                   join order in _readDBContext.Order on orderDetail.OD_order_id equals order.O_id
-                   join drinkFood in _readDBContext.DrinkFood on orderDetail.OD_drink_food_id equals drinkFood.DF_id
-                   join account in _readDBContext.Account on orderDetail.OD_account_id equals account.A_id
-                   join sugarOption in _readDBContext.Option on orderDetail.OD_sugar_id equals sugarOption.O_id
-                   join iceOption in _readDBContext.Option on orderDetail.OD_ice_id equals iceOption.O_id
-                   join sizeOption in _readDBContext.Option on orderDetail.OD_size_id equals sizeOption.O_id
-                   join paymentCodeTable in _readDBContext.CodeTable.Where(x => x.CT_type.Contains("Payment")) on orderDetail.OD_payment_id equals paymentCodeTable.CT_id
-                   join office in _readDBContext.Office on order.O_office_id equals office.O_id
-                   join store in _readDBContext.Store on order.O_store_id equals store.S_id
-                   join brand in _readDBContext.Brand on store.S_brand_id equals brand.B_id
-                   select new ViewOrderDetail
-                   {
-                       OrderID = orderDetail.OD_order_id,
-                       OrderDetailID = orderDetail.OD_id,
-                       DrinkFoodID = orderDetail.OD_drink_food_id,
-                       DrinkFoodName = drinkFood.DF_name,
-                       DrinkFoodPrice = drinkFood.DF_price,
-                       DrinkFoodRemark = drinkFood.DF_remark ?? "",
-                       SugarID = orderDetail.OD_sugar_id,
-                       SugarDesc = sugarOption.O_name,
-                       IceID = orderDetail.OD_ice_id,
-                       IceDesc = iceOption.O_name,
-                       SizeID = orderDetail.OD_size_id,
-                       SizeDesc = sizeOption.O_name,
-                       DetailAccountID = orderDetail.OD_account_id,
-                       Name = account.A_name,
-                       Brief = account.A_brief,
-                       Email = account.A_email,
-                       PaymentID = orderDetail.OD_payment_id,
-                       PaymentDesc = paymentCodeTable.CT_desc,
-                       PaymentDatetime = orderDetail.OD_payment_datetime,
-                       PaymentArrived = orderDetail.OD_payment_datetime.HasValue,
-                       Quantity = orderDetail.OD_quantity,
-                       IsPickup = orderDetail.OD_pickup,
-                       DetailRemark = orderDetail.OD_remark,
-                       OrderStatus = order.O_status,
-                       CloseTime = order.O_close_time,
-                       OwnerID = order.O_create_account_id
-                       //OrderID = orderDetail.OD_order_id,
-                       //ArrivalTime = order.O_arrival_time,
-                       //OrderStatus = order.O_status,
-                       //OrderStatusDesc = "尚未設定",
-                       //OwnerID = order.O_create_account_id,
-                       //OfficeID = order.O_office_id,
-                       //OfficeName = office.O_name,
-                       //StoreID = order.O_store_id,
-                       //StoreName = store.S_name,
-                       //BrandID = brand.B_id,
-                       //BrandName = brand.B_name,
-                   };
-        }
-
-        #endregion
 
         #region 訂單明細流程動作 (加入品項/刪除品項)
 
@@ -104,7 +58,7 @@ namespace DrinkFood_API.Repository
         /// <exception cref="ApiException"></exception>
         public void DeleteOrderDetail(Guid OrderDetailID)
         {
-            _ = GetViewOrderDetail().Where(x =>
+            _ = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 
@@ -170,7 +124,7 @@ namespace DrinkFood_API.Repository
                 new GroupOrderDetailModel
                 {
                     Name = !string.IsNullOrWhiteSpace(x.Key.Brief) ? x.Key.Brief : x.Key.Name,
-                    TotalPrice = x.Select(x => x.DrinkFoodPrice * x.Quantity.Value).Sum(),
+                    TotalPrice = x.Where(x => x.DrinkFoodPrice.HasValue && x.Quantity.HasValue).Select(x => x.DrinkFoodPrice.Value * x.Quantity.Value).Sum(),
                     TotalQuantity = x.Where(x => x.Quantity.HasValue).Select(x => x.Quantity.Value).Sum(),
                     OrderDetailList = x.ToList(),
                 }
@@ -202,7 +156,7 @@ namespace DrinkFood_API.Repository
 
         public void CheckMyOrderDetail(Guid AccountID, Guid OrderDetailID)
         {
-            var orderDetail = GetViewOrderDetail().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderDetailID == OrderDetailID
             ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
 

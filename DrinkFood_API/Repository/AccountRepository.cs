@@ -3,9 +3,18 @@ using DataBase.Entities;
 using DataBase;
 using DrinkFood_API.Models;
 using CodeShare.Libs.BaseProject;
+using DataBase.View;
 
 namespace DrinkFood_API.Repository
 {
+    public class ViewAccountRepository : BaseView<EFContext, ViewAccount>
+    {
+        public ViewAccountRepository(IServiceProvider provider) : base(provider)
+        {
+            provider.Inject(this);
+        }
+    }
+
     public class AccountRepository : BaseTable<EFContext, Account>
     {
         /// <summary>
@@ -17,32 +26,6 @@ namespace DrinkFood_API.Repository
         }
 
         #region 使用者查詢 (View)
-
-        public IQueryable<ViewAccount> GetViewAccount()
-        {
-            return from account in _readDBContext.Account
-                   join drinkPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "DrinkPayment") on account.A_default_drink_payment equals drinkPayment.CT_id into drinkPaymentGroup
-                   from drinkPayment in drinkPaymentGroup.DefaultIfEmpty()
-                   join lunchPayment in _readDBContext.CodeTable.Where(x => x.CT_type == "LunchPayment") on account.A_default_lunch_payment equals lunchPayment.CT_id into lunchPaymentGroup
-                   from lunchPayment in lunchPaymentGroup.DefaultIfEmpty()
-                   select new ViewAccount
-                   {
-                       AccountID = account.A_id,
-                       Name = account.A_name,
-                       Brief = account.A_brief,
-                       Email = account.A_email,
-                       LineID = account.A_line_id,
-                       LunchNotify = account.A_lunch_notify,
-                       DrinkNotify = account.A_drink_notify,
-                       CloseNotify = account.A_close_notify,
-                       DefaultDrinkPayment = drinkPayment != null ? drinkPayment.CT_id : null,
-                       DefaultDrinkPaymentDesc = drinkPayment != null ? drinkPayment.CT_desc : null,
-                       DefaultLunchPayment = lunchPayment != null ? lunchPayment.CT_id : null,
-                       DefaultLunchPaymentDesc = lunchPayment != null ? lunchPayment.CT_desc : null,
-                       IsAdmin = account.A_is_admin,
-                   };
-        }
-
 
         #endregion
 

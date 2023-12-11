@@ -11,6 +11,8 @@ namespace DrinkFood_API.Services
 
         [Inject] private readonly OrderRepository _orderRepository;
 
+        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
+
         public StoreService(IServiceProvider provider) : base(provider) 
         {
             provider.Inject(this);
@@ -26,7 +28,7 @@ namespace DrinkFood_API.Services
             var response = _storeRepository.GetStoreList(RequestData);
 
             var storeIDs = response.Select(x => x.StoreID).ToList();
-            var storeOrder = _orderRepository.GetViewOrder().Where(x => storeIDs.Contains(x.StoreID)).ToList();
+            var storeOrder = _viewOrderRepository.FindAll(x => storeIDs.Contains(x.StoreID)).ToList();
 
             foreach (var item in response)
             {

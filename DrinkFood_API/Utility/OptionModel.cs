@@ -1,4 +1,5 @@
 ﻿using DataBase.Entities;
+using DataBase.View;
 using DrinkFood_API.Models;
 
 namespace DrinkFood_API.Utility
@@ -21,7 +22,7 @@ namespace DrinkFood_API.Utility
             Text = Entity.CT_desc;
         }
 
-        public OptionsModel(Office Entity)
+        public OptionsModel(ViewOffice Entity)
         {
             ID = Entity.O_id;
             Text = Entity.O_name;

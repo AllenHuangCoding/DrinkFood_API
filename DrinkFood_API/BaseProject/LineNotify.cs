@@ -55,13 +55,13 @@ namespace CodeShare.Libs.BaseProject
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(content)["access_token"];
         }
 
-        public async Task Notify(string accessToken, string message)
+        public void Notify(string accessToken, string message)
         {
             using HttpClient httpClient = new();
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             HttpContent content = new StringContent($"message={message}", Encoding.UTF8, "application/x-www-form-urlencoded");
-            _ = await httpClient.PostAsync("https://notify-api.line.me/api/notify", content);
+            _ = httpClient.PostAsync("https://notify-api.line.me/api/notify", content).GetAwaiter().GetResult();
         }
     }
 }

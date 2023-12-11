@@ -1,6 +1,5 @@
 ﻿using CodeShare.Libs.BaseProject;
-using DrinkFood_API.Model;
-using DrinkFood_API.Models;
+using DataBase.View;
 using DrinkFood_API.Services;
 using Microsoft.AspNetCore.Mvc;
 

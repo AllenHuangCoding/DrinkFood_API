@@ -4,6 +4,7 @@ using DrinkFood_API.Models;
 using DrinkFood_API.Repository;
 using DrinkFood_API.Utility;
 using CodeShare.Libs.BaseProject.Extensions;
+using DataBase.View;
 
 namespace DrinkFood_API.Services
 {
@@ -11,15 +12,21 @@ namespace DrinkFood_API.Services
     {
         [Inject] private readonly OrderRepository _orderRepository;
 
+        [Inject] private readonly ViewOrderRepository _viewOrderRepository;
+
         [Inject] private readonly OrderDetailRepository _orderDetailRepository;
 
-        [Inject] private readonly OfficeRepository _officeRepository;
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
+
+        [Inject] private readonly ViewOfficeRepository _viewOfficeRepository;
 
         [Inject] private readonly CodeTableRepository _codeTableRepository;
 
-        [Inject] private readonly StoreRepository _storeRepository;
+        [Inject] private readonly ViewStoreRepository _viewStoreRepository;
 
-        [Inject] private readonly AuthService _authService;
+        [Inject] private readonly IAuthService _authService;
+
+        [Inject] private readonly LineService _lineService;
 
         public OrderService(IServiceProvider provider) : base(provider)
         {
@@ -29,19 +36,19 @@ namespace DrinkFood_API.Services
         #region 訂單查詢 (清單/詳細/選項選單)
 
         /// <summary>
-        /// 訂單清單 (公團 + 私團)
+        /// 訂單清單 (公團 + 已加入的私團)
         /// </summary>
         /// <returns></returns>
         public List<OrderListModel> GetOrderList()
         {
             // 公團 (從資料庫搜尋)
-            List<ViewOrder> publicOrder = _orderRepository.GetViewOrder().Where(x => 
+            List<ViewOrder> publicOrder = _viewOrderRepository.FindAll(x => 
                 x.IsPublic
             ).ToList();
 
             // 私團 (從已加入的私團明細往回推私團資訊)
-            List<ViewOrderDetail> privateOrderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x => x.DetailAccountID == _authService.UserID).ToList();
-            List<ViewOrder> privateOrder = _orderRepository.GetViewOrder().Where(x =>
+            List<ViewOrderDetail> privateOrderDetail = _viewOrderDetailRepository.FindAll(x => x.DetailAccountID == _authService.UserID).ToList();
+            List<ViewOrder> privateOrder = _viewOrderRepository.FindAll(x =>
                 !x.IsPublic
             ).AsEnumerable().Where(x =>
                 privateOrderDetail.SelectProperty(y => y.OrderID).Contains(x.OrderID)
@@ -64,10 +71,10 @@ namespace DrinkFood_API.Services
         public ViewOrderAndDetail GetOrder(Guid OrderID)
         {
             // 訂單原始資料
-            ViewOrder order = _orderRepository.GetViewOrder().Where(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
+            ViewOrder order = _viewOrderRepository.FindAll(x => x.OrderID == OrderID).FirstOrDefault() ?? throw new ApiException("訂單ID不存在", 400);
 
             // 訂單明細原始資料
-            List<ViewOrderDetail> orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 x.OrderID == order.OrderID
             ).ToList();
 
@@ -91,9 +98,9 @@ namespace DrinkFood_API.Services
         {
             return new ResponseOrderDialogOptions
             {
-                Office = _officeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
+                Office = _viewOfficeRepository.GetAll().Select(x => new OptionsModel(x)).ToList(),
                 Type = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").OrderBy(x => x.CT_order).Select(x => new OptionsModel(x)).ToList(),
-                Store = _storeRepository.GetViewStore().Select(x => new ResponseStoreListModel(x)).Select(x => new OptionsModel(x)).ToList()
+                Store = _viewStoreRepository.GetAll().Select(x => new ResponseStoreListModel(x)).Select(x => new OptionsModel(x)).ToList()
             };
         }
 
@@ -107,7 +114,7 @@ namespace DrinkFood_API.Services
         /// <param name="RequestData"></param>
         public void PostOrder(RequestPostOrderModel RequestData)
         {
-            _orderRepository.Create(new Order
+            Order createOrder = _orderRepository.Create(new Order
             {
                 O_office_id = RequestData.OfficeID,
                 O_create_account_id = RequestData.CreateAccountID,
@@ -117,10 +124,14 @@ namespace DrinkFood_API.Services
                 O_arrival_time = RequestData.ArrivalTime,
                 O_open_time = RequestData.OpenTime,
                 O_close_time = RequestData.CloseTime,
-                O_is_public = RequestData.IsPublic,
+                O_is_public = RequestData.IsPublic.HasValue && RequestData.IsPublic.Value,
             });
 
-            // 公團的 Line Notify / Email 開團通知
+            // 開私團時自動將開團者加入，才能顯示在列表上
+            JoinOrder(createOrder.O_id);
+
+            // 開團的Line Notify通知
+            _lineService.CreateOrderNotify(createOrder.O_id);
 
             // (HangFire) 設定Line Notify / Message結單前提醒
         }
@@ -131,12 +142,21 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void JoinOrder(Guid OrderID)
         {
-            _orderDetailRepository.Create(new OrderDetail
+            // 若不存在於訂單明細中則加入空明細
+            ViewOrderDetail? viewOrderDetail = _viewOrderDetailRepository.GetAll().FirstOrDefault(x =>
+                x.OrderID == OrderID &&
+                x.DetailAccountID == _authService.UserID
+            );
+
+            if (viewOrderDetail == null)
             {
-                OD_order_id = OrderID,
-                OD_account_id = _authService.UserID,
-                OD_create_account_id = _authService.UserID,
-            });
+                _orderDetailRepository.Create(new OrderDetail
+                {
+                    OD_order_id = OrderID,
+                    OD_account_id = _authService.UserID,
+                    OD_create_account_id = _authService.UserID,
+                });
+            }
         }
 
         #endregion
@@ -190,7 +210,7 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void DelayNotify(Guid OrderID)
         {
-
+            _lineService.DelayNotify(OrderID);
         }
 
         /// <summary>
@@ -199,9 +219,8 @@ namespace DrinkFood_API.Services
         /// <param name="OrderID"></param>
         public void DelayArrivalNotify(Guid OrderID)
         {
-
+            _lineService.DelayArrivalNotify(OrderID);
         }
-
 
         #endregion
 
@@ -215,13 +234,13 @@ namespace DrinkFood_API.Services
         public List<ViewDetailHistory> GetOrderDetailHistory(Guid AccountID)
         {
             // 訂單明細原始資料
-            List<ViewOrderDetail> orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.DetailAccountID == AccountID
+            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.FindAll(x =>
+                x.DetailAccountID == AccountID && x.DrinkFoodID.HasValue
             ).ToList();
 
             // 訂單原始資料
             List<Guid> ids = orderDetail.SelectProperty(y => y.OrderID);
-            List<ViewOrder> order = _orderRepository.GetViewOrder().Where(x =>
+            List<ViewOrder> order = _viewOrderRepository.FindAll(x =>
                 ids.Contains(x.OrderID)
             ).AsEnumerable().ToList();
 
@@ -301,6 +320,17 @@ namespace DrinkFood_API.Services
         private static string CreateOrderNo()
         {
             return string.Format("O{0}{1:0000}", DateTime.Now.ToString("yyyyMMdd"), new Random().Next(1, 9999));
+        }
+
+        #endregion
+
+        #region Line測試用方法
+
+        public void TestOrderLine(Guid OrderID)
+        {
+            _lineService.CreateOrderNotify(OrderID);
+            _lineService.DelayNotify(OrderID);
+            _lineService.DelayArrivalNotify(OrderID);
         }
 
         #endregion

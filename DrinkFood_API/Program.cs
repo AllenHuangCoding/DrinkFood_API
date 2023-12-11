@@ -4,6 +4,7 @@ using CodeShare.Libs.BaseProject;
 using DrinkFood_API.Service;
 using DrinkFood_API.Services;
 using Microsoft.OpenApi.Models;
+using DrinkFood_API.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,17 +51,16 @@ builder.Configuration.AddConfiguration(configRoot);
 
 // 服務與工廠
 builder.Services.AddScoped<DBContextFactory<EFContext>>();
+builder.Services.AddScoped<TokenManager>();
 
 builder.Services.AddScoped<IDmlLogService, LogService>();
 builder.Services.AddScoped<IApiLogService, ApiLogService>();
-builder.Services.AddScoped<ITokenLogic, AuthService>();
-builder.Services.AddScoped<TokenManager>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // 自動注入繼承Base相關的類別
 builder.Services.AddScopedByClassName("BaseTable");
 builder.Services.AddScopedByClassName("BaseView");
 builder.Services.AddScopedByClassName("BaseService");
-
 
 builder.Services.AddHttpContextAccessor();
 

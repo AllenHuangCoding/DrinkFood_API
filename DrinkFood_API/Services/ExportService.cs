@@ -8,9 +8,13 @@ namespace DrinkFood_API.Services
 {
     public class ExportService : BaseService
     {
-        [Inject] private readonly OrderDetailRepository _orderDetailRepository;
-
         [Inject] private readonly OrderRepository _orderRepository;
+
+        [Inject] private readonly ViewOrderDetailRepository _viewOrderDetailRepository;
+
+        [Inject] private readonly OrderService _orderService;
+
+        [Inject] private readonly IAuthService _authService;
 
         public ExportService(IServiceProvider provider) : base(provider)
         {
@@ -19,22 +23,17 @@ namespace DrinkFood_API.Services
 
         public FileResult ExportOrderDetailHistory(Guid AccountID)
         {
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
-                x.DetailAccountID == AccountID
-            ).ToList();
+            // 判斷自己與管理者才可以下載檔案
+            if (AccountID != _authService.UserID)
+            {
+                _authService.CheckAdmin();
+            }
 
-            var orderIDs = orderDetail.Select(x => x.OrderID).ToList();
+            List<ViewDetailHistory> detailHistory = _orderService.GetOrderDetailHistory(AccountID);
 
-            var order = _orderRepository.GetViewOrder().Where(x => orderIDs.Contains(x.OrderID)).ToList();
+            List<DetailHistoryExcelModel> exportHistory = detailHistory.Select(x => new DetailHistoryExcelModel(x)).ToList();
 
-            var history = orderDetail.Select(x =>
-                new DetailHistoryExcelModel(
-                    x,
-                    order.First(o => o.OrderID == x.OrderID)
-                )
-            ).ToList();
-
-            return new ExportExcel("./Template", "History.xlsx").DataToTableContent(history).ToExcel("消費紀錄");
+            return new ExportExcel("./Template", "History.xlsx").DataToTableContent(exportHistory).ToExcel("消費紀錄");
         }
 
         public FileResult ExportMonthReport(RequestMonthReportModel RequestData)
@@ -47,7 +46,7 @@ namespace DrinkFood_API.Services
             ).ToList();
 
             var orderIDs = order.Select(x => x.O_id).ToList();
-            var orderDetail = _orderDetailRepository.GetViewOrderDetail().Where(x =>
+            var orderDetail = _viewOrderDetailRepository.FindAll(x =>
                 orderIDs.Contains(x.OrderID)
             ).ToList();
 
