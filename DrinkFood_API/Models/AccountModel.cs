@@ -105,13 +105,13 @@ namespace DrinkFood_API.Models
 
     public class ResponseInfoCardModel
     {
-        public List<InfoCardDataModel> Lunch { get; set; } = null!;
+        public List<InfoCardDataModel> Lunch { get; set; } = new();
 
-        public List<InfoCardDataModel> Drink { get; set; } = null!;
+        public List<InfoCardDataModel> Drink { get; set; } = new();
 
-        public List<InfoCardDataModel> Teatime { get; set; } = null!;
+        public List<InfoCardDataModel> Teatime { get; set; } = new();
 
-        public InfoCardDataModel Other { get; set; } = null!;
+        public List<InfoCardDataModel> Other { get; set; } = new();
     }
 
     public class InfoCardDataModel
@@ -124,35 +124,35 @@ namespace DrinkFood_API.Models
 
         public InfoCardDataModel() { }
 
-        public InfoCardDataModel(ViewOrder Entity)
+        public InfoCardDataModel(OrderListModel Entity)
         {
             string TitleDay;
-            if (DateTime.Now.Date == Entity.ArrivalTime.Date)
+            if (DateTime.Now.Date == Convert.ToDateTime(Entity.ArrivalTime).Date)
             {
                 TitleDay = "今天";
             }
-            else if (DateTime.Now.Date.AddDays(1) == Entity.ArrivalTime.Date)
+            else if (DateTime.Now.Date.AddDays(1) == Convert.ToDateTime(Entity.ArrivalTime).Date)
             {
                 TitleDay = "明天";
             }
-            else if (DateTime.Now.Date.AddDays(2) == Entity.ArrivalTime.Date)
+            else if (DateTime.Now.Date.AddDays(2) == Convert.ToDateTime(Entity.ArrivalTime).Date)
             {
                 TitleDay = "後天";
             }
             else
             {
-                TitleDay = Entity.ArrivalTime.ToString("MM/dd");
+                TitleDay = Convert.ToDateTime(Entity.ArrivalTime).ToString("MM/dd");
             }
             Title = TitleDay + Entity.TypeDesc;
             Main = Entity.BrandName;
             
-            if (DateTime.Now < Entity.CloseTime)
+            if (DateTime.Now < Convert.ToDateTime(Entity.CloseTime))
             {
-                Info = $"{Entity.CloseTime:HH:mm} 結單";
+                Info = $"{Convert.ToDateTime(Entity.CloseTime):HH:mm} 結單";
             }
             else
             {
-                Info = $"預計 {Entity.ArrivalTime:HH:mm} 抵達";
+                Info = $"預計 {Convert.ToDateTime(Entity.ArrivalTime):HH:mm} 抵達";
             }
         }
     }

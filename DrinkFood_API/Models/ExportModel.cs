@@ -61,6 +61,21 @@ namespace DrinkFood_API.Models
             PaymentDesc = OrderDetail.PaymentDesc;
             OfficeName = Order.OfficeName;
         }
+
+        public DetailHistoryExcelModel(ViewDetailHistory orderDetail)
+        {
+            ArrivalTime = orderDetail.ArrivalTime;
+            BrandName = orderDetail.BrandName;
+            StoreName = orderDetail.StoreName;
+            DrinkFoodName = orderDetail.DrinkFoodName;
+            SugarDesc = orderDetail.SugarDesc;
+            IceDesc = orderDetail.IceDesc;
+            DrinkFoodPrice = orderDetail.DrinkFoodPrice;
+            Quantity = orderDetail.Quantity;
+            DetailRemark = orderDetail.DetailRemark;
+            PaymentDesc = orderDetail.PaymentDesc;
+            OfficeName = orderDetail.OfficeName;
+        }
     }
 
     public class MonthExportExcelModel

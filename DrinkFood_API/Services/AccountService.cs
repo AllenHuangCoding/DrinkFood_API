@@ -28,67 +28,6 @@ namespace DrinkFood_API.Services
             provider.Inject(this);
         }
 
-        #region 首頁三區塊
-
-        public ResponseInfoCardModel GetInfoCard()
-        {
-            // 需要改成有私團的版本
-
-            // 查詢未來一周的訂單
-            DateTime sd = DateTime.Now.Date;
-            DateTime ed = DateTime.Now.Date.AddDays(7);
-
-            List<ViewOrder> sevenDaysOrder = _viewOrderRepository.FindAll(x =>
-                sd <= x.ArrivalTime && x.ArrivalTime <= ed
-            ).ToList();
-
-            // 將一周的訂單分成午餐、飲料、下午茶類型
-            List<CodeTable> orderType = _codeTableRepository.FindAll(x => x.CT_type == "OrderType").ToList();
-
-            // 未來一周午餐訂單
-            CodeTable lunchType = orderType.First(x => x.CT_desc == "午餐");
-            List<ViewOrder> lunchOrder = sevenDaysOrder.Where(x => x.Type == lunchType.CT_id).ToList();
-
-            // 未來一周飲料訂單
-            CodeTable drinkType = orderType.First(x => x.CT_desc == "飲料");
-            List<ViewOrder> drinkOrder = sevenDaysOrder.Where(x => x.Type == drinkType.CT_id).ToList();
-
-            // 未來一周下午茶訂單
-            CodeTable teatimeType = orderType.First(x => x.CT_desc == "下午茶");
-            List<ViewOrder> teatimeOrder = sevenDaysOrder.Where(x => x.Type == teatimeType.CT_id).ToList();
-
-            ResponseInfoCardModel response = new()
-            {
-                Lunch = lunchOrder.Select(x => new InfoCardDataModel(x)).ToList(),
-                Drink = drinkOrder.Select(x => new InfoCardDataModel(x)).ToList(),
-                Teatime = teatimeOrder.Select(x => new InfoCardDataModel(x)).ToList(),
-                Other = new() { Title = "許願池", Main = "尚未開放", Info = "尚未開放" }
-            };
-
-            return response;
-        }
-
-        public List<ResponseTodayOrderModel> GetTodayOrder()
-        {
-            // 設定今日時間區間
-            DateTime sd = DateTime.Now.Date;
-            DateTime ed = DateTime.Now.Date.AddDays(1);
-
-            // 取得原始資料
-            List<ViewOrderDetail> orderDetail = _viewOrderDetailRepository.FindAll(x => 
-                x.DetailAccountID == _authService.UserID &&
-                x.DrinkFoodID.HasValue && x.DrinkFoodPrice.HasValue && x.Quantity.HasValue &&
-                !string.IsNullOrWhiteSpace(x.DrinkFoodName) &&
-                sd <= x.ArrivalTime && x.ArrivalTime < ed
-            ).ToList();
-
-            // 轉型
-            return orderDetail.Select(x => new ResponseTodayOrderModel(x)).ToList();
-        }
-
-
-        #endregion
-
         #region 普通使用者 (查詢個人資料/修改個人資料/午餐與飲料付款方式選單)
 
         /// <summary>

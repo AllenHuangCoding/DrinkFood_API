@@ -262,19 +262,28 @@ namespace DrinkFood_API.Models
 
         public Guid DetailAccountID { get; set; }
 
-        public ViewDetailHistory(OrderDetailListModel OrderDetail, OrderListModel listModel)
+        public string IceDesc { get; set; }
+
+        public string SugarDesc { get; set; }
+
+        public string StoreName {  get; set; }
+
+        public ViewDetailHistory(OrderDetailListModel orderDetail, OrderListModel listModel)
         {
-            OrderDetailID = OrderDetail.OrderDetailID;
+            OrderDetailID = orderDetail.OrderDetailID;
             ArrivalTime = listModel.ArrivalTime;
             BrandName = listModel.BrandName;
             BrandStoreName = listModel.BrandStoreName;
-            DrinkFoodName = $"{OrderDetail.DrinkFoodName} / {OrderDetail.SugarDesc} / {OrderDetail.IceDesc}";
-            DrinkFoodPrice = OrderDetail.DrinkFoodPrice.HasValue ? OrderDetail.DrinkFoodPrice.Value : 0;
-            DetailRemark = OrderDetail.DetailRemark;
-            PaymentDesc = OrderDetail.PaymentDesc;
-            Quantity = OrderDetail.Quantity;
+            DrinkFoodName = $"{orderDetail.DrinkFoodName} / {orderDetail.SugarDesc} / {orderDetail.IceDesc}";
+            DrinkFoodPrice = orderDetail.DrinkFoodPrice.HasValue ? orderDetail.DrinkFoodPrice.Value : 0;
+            DetailRemark = orderDetail.DetailRemark;
+            PaymentDesc = orderDetail.PaymentDesc;
+            Quantity = orderDetail.Quantity;
             OfficeName = listModel.OfficeName;
-            DetailAccountID = OrderDetail.DetailAccountID;
+            DetailAccountID = orderDetail.DetailAccountID;
+            IceDesc = orderDetail.IceDesc ?? "";
+            SugarDesc = orderDetail.SugarDesc ?? "";
+            StoreName = listModel.StoreName;
         }
     }
 

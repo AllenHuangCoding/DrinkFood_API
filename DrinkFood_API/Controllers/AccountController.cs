@@ -19,28 +19,6 @@ namespace DrinkFood_API.Controllers
         }
 
         /// <summary>
-        /// 首頁_開團資訊
-        /// </summary>
-        [ProducesResponseType(typeof(ResponseInfoCardModel), StatusCodes.Status200OK)]
-        [HttpGet("GetInfoCard")]
-        public IActionResult GetInfoCard()
-        {
-            var Response = _accountService.GetInfoCard();
-            return Json(new ResponseData<ResponseInfoCardModel>(Response, 1));
-        }
-
-        /// <summary>
-        /// 首頁_今日點餐
-        /// </summary>
-        [ProducesResponseType(typeof(List<ResponseTodayOrderModel>), StatusCodes.Status200OK)]
-        [HttpGet("GetTodayOrder")]
-        public IActionResult GetTodayOrder()
-        {
-            var Response = _accountService.GetTodayOrder();
-            return Json(new ResponseData<List<ResponseTodayOrderModel>>(Response, Response.Count));
-        }
-
-        /// <summary>
         /// 查詢個人資料
         /// </summary>
         [ProducesResponseType(typeof(ViewAccount), StatusCodes.Status200OK)]
