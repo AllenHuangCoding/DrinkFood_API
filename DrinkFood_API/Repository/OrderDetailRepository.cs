@@ -58,11 +58,10 @@ namespace DrinkFood_API.Repository
         /// <exception cref="ApiException"></exception>
         public void DeleteOrderDetail(Guid OrderDetailID)
         {
-            _ = _viewOrderDetailRepository.FindAll(x =>
-                x.OrderDetailID == OrderDetailID
-            ).FirstOrDefault() ?? throw new ApiException("訂單內容不存在", 400);
-
-            Delete(OrderDetailID);
+            var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
+            orderDetail.OD_status = "99";
+            orderDetail.OD_update = DateTime.Now;
+            Update(OrderDetailID, orderDetail);
         }
 
         #endregion
@@ -92,7 +91,7 @@ namespace DrinkFood_API.Repository
         public void PutPaymentDatetime(Guid OrderDetailID, DateTime? PaymentDateTime)
         {
             var orderDetail = GetById(OrderDetailID) ?? throw new ApiException("訂單內容不存在", 400);
-            orderDetail.OD_payment_datetime = PaymentDateTime;
+            orderDetail.OD_payment_datetime = PaymentDateTime.HasValue ? PaymentDateTime.Value.ToLocalTime() : null;
             orderDetail.OD_update = DateTime.Now;
             Update(OrderDetailID, orderDetail);
         }

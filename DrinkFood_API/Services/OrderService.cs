@@ -121,9 +121,9 @@ namespace DrinkFood_API.Services
                 O_store_id = RequestData.StoreID,
                 O_no = CreateOrderNo(),
                 O_type = RequestData.TypeID,
-                O_arrival_time = RequestData.ArrivalTime,
-                O_open_time = RequestData.OpenTime,
-                O_close_time = RequestData.CloseTime,
+                O_arrival_time = RequestData.ArrivalTime.ToLocalTime(),
+                O_open_time = RequestData.OpenTime.ToLocalTime(),
+                O_close_time = RequestData.CloseTime.ToLocalTime(),
                 O_is_public = RequestData.IsPublic.HasValue && RequestData.IsPublic.Value,
             });
 
@@ -189,7 +189,7 @@ namespace DrinkFood_API.Services
         /// </summary>
         public void PutArrivalTime(Guid OrderID, RequestPutArrivalTimeModel RequestData)
         {
-            _orderRepository.PutArrivalTime(OrderID, RequestData.ArrivalTime);
+            _orderRepository.PutArrivalTime(OrderID, RequestData.ArrivalTime.ToLocalTime());
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace DrinkFood_API.Services
         /// </summary>
         public void PutCloseTime(Guid OrderID, RequestPutCloseTimeModel RequestData)
         {
-            _orderRepository.PutCloseTime(OrderID, RequestData.CloseTime);
+            _orderRepository.PutCloseTime(OrderID, RequestData.CloseTime.ToLocalTime());
         }
 
         #endregion

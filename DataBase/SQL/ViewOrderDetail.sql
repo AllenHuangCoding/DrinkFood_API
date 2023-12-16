@@ -37,3 +37,4 @@ LEFT JOIN [Option] sugarOption ON OD_sugar_id = sugarOption.O_id
 LEFT JOIN [Option] iceOption ON OD_ice_id = iceOption.O_id
 LEFT JOIN [Option] sizeOption ON OD_size_id = sizeOption.O_id
 LEFT JOIN CodeTable paymentCodeTable ON OD_payment_id = paymentCodeTable.CT_id AND paymentCodeTable.CT_type LIKE '%Payment%'
+WHERE OD_status != '99'

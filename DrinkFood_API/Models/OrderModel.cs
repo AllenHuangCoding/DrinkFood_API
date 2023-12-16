@@ -200,7 +200,7 @@ namespace DrinkFood_API.Models
             Brief = Entity.Brief;
             Email = Entity.Email;
             PaymentID = Entity.PaymentID;
-            PaymentDesc = Entity.PaymentDesc ?? "尚未付款";
+            PaymentDesc = Entity.PaymentDesc;
             PaymentDatetime = Entity.PaymentDatetime;
             Quantity = Entity.Quantity;
             IsPickup = Entity.IsPickup;
